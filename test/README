@@ -1,0 +1,6 @@
+To execute a test ::
+   
+   # export PYTHONPATH=../src
+   # python test_player.py
+   
+   

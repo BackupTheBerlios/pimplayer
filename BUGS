@@ -1,0 +1,37 @@
+* Player has to be manually destroyed ...
+
+* When a lot of file are added, the following error occur:
+  Unexpected error: <type 'exceptions.OSError'>
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 45893)
+Traceback (most recent call last):
+  File "/usr/lib/python2.6/SocketServer.py", line 560, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/usr/lib/python2.6/SocketServer.py", line 322, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "/home/eiche/comp/pimpd/mpd.py", line 151, in __init__
+    SocketServer.StreamRequestHandler.__init__(self,request,client_address,server)
+  File "/usr/lib/python2.6/SocketServer.py", line 617, in __init__
+    self.handle()
+  File "/home/eiche/comp/pimpd/mpd.py", line 177, in handle
+    msg=msg+self.cmdExec(c)
+  File "/home/eiche/comp/pimpd/mpd.py", line 192, in cmdExec
+    msg=self.server.Command[cmd](self.server,args)
+  File "/home/eiche/comp/pimpd/mpd.py", line 80, in add
+    def add(self,args): self.player.append(args[0])
+  File "/home/eiche/comp/pimpd/playlist.py", line 30, in append
+    if(supported(path)):
+  File "/home/eiche/comp/pimpd/file.py", line 37, in supported
+    return type(path) != None
+  File "/home/eiche/comp/pimpd/file.py", line 16, in type
+    t = commands.getstatusoutput('gst-typefind-0.10 "%s"' % path)
+  File "/usr/lib/python2.6/commands.py", line 55, in getstatusoutput
+    pipe = os.popen('{ ' + cmd + '; } 2>&1', 'r')
+OSError: [Errno 24] Trop de fichiers ouverts
+
+
+* After some times (???), no song are queued. don't know how, when ...
+
+* If a song is currently played and the playlist is cleared, then the
+  stop event don't work because the current played file path is not
+  known.

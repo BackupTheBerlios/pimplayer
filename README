@@ -1,0 +1,64 @@
+About
+-----
+
+Pimp is a music player on a client server model. The player can be
+controlled with a mpd client or via an pyton interpreter. File system
+can be directly played and it is record in a database. Files are
+identified by a 'fingerprint' which permits to identify an audio file over
+file moving and tag modification.
+
+Moreover, it logs a lot of events on file such as play, stop, seek,
+etc in order to get playlists or statistics. 
+
+Pimp is based on pygst for the audio part and sqlalchmy for the data
+part.
+
+
+Run it
+------
+* Create a mysql user 'pimp'
+* Create a mysql database 'pimp_db' (tables are created by pimp if not exist)
+* Run :: 
+  			
+     # python main.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp 2 > 1 > /dev/null &
+     
+ or with a pyton interpreter ::
+
+     # python -i pimpreter.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
+       >>> player.append("/a/song")
+       >>> player.play()
+
+
+Use it
+------
+* With mpc::
+  
+     # mpc -p 9999 add /a/song 
+     # mpc -p 9999 play
+     
+* With pimpreter::
+  
+  >>> player.append("/a/song")
+  >>> player.play()
+
+  You can use tabulation on player object.
+
+* Note and Comment in pimpreter::
+
+  >>> Note.Add("/a/file",4)
+  >>> Comment.OnPlayedFile("a comment")
+  
+       
+Features
+--------
+* A Mpd client can be used to control Pimp (partially comptatible)
+* Audio part is based on gstreamer
+* Files are identified by a fingerprint
+* No database update are required (files are added to the database)
+* A python interpreter can be used to control Pimp 
+
+Limits
+------
+* Just 3 audio formats are currently available: mp3, ogg, flac.
+  But it's not so hard to add them: add them in File module
+* Mpd library doesn't exist.

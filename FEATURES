@@ -1,0 +1,5 @@
+- player with basic actions: play, stop, pause, seek.
+- playlist added next, prev actions.
+- all action are logged in a database.
+- file logged in the database can be identified later with an audio fingerprint
+- a mpd server backend to control the player
