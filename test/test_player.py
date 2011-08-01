@@ -19,6 +19,10 @@ class TestPlayer(unittest.TestCase):
 
     def test_load_valid(self):
         self.assertTrue(self.instance.load(data.file_valid))
+
+    def test_duration(self):
+        self.instance.load(data.file_valid)
+        self.assertEqual(self.instance.information()['duration'],365)
         
     def test_stress_load(self):
         """ To test a lot of load calls """

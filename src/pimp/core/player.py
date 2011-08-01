@@ -40,7 +40,7 @@ class Player:
 		self.bus.add_signal_watch()
 		self.bus_handler_id=self.bus.connect("message", self._on_message)
 		thread.start_new_thread(self._startMainloop, ())
-		self._ready=threading.Event()
+#		self._ready=threading.Event()
 		if filepath != None :
 			self.load(filepath)
 
@@ -71,13 +71,13 @@ class Player:
 			err, debug = message.parse_error()
 			self.handle_error()
 			logging.debug("pygst error: %s | %s" % (err, debug))
-		elif t == gst.MESSAGE_STATE_CHANGED:
-			if message.src is self.player:
-				old, new, pending = message.parse_state_changed()
-				if new==gst.STATE_READY:
-					self._ready.set()
-				if new==gst.STATE_NULL:
-					self._ready.clear()
+		# elif t == gst.MESSAGE_STATE_CHANGED:
+		# 	if message.src is self.player:
+		# 		old, new, pending = message.parse_state_changed()
+		# 		if new==gst.STATE_READY:
+		# 			self._ready.set()
+		# 		if new==gst.STATE_NULL:
+		# 			self._ready.clear()
 
 
 	def seek(self,t):
@@ -125,7 +125,8 @@ class Player:
 
 
 	def load(self,filepath):
-		""" Load a file in pygst to get some informations (duration ...).
+		""" Load a file in pygst to get some informations (duration ...). 
+		If loading is successful, the player is set to STATE_PAUSED.
 
 		:rtype: False if:
 
@@ -137,12 +138,12 @@ class Player:
 				return False
 			else:
 				self.player.set_property("uri", "file://" + filepath)
-				s=self.player.set_state(gst.STATE_PLAYING)
+				s=self.player.set_state(gst.STATE_PAUSED)
 				if s ==  gst.STATE_CHANGE_FAILURE:
 					logging.debug("File can not be loaded %s" % filepath)
 					return False
-				s=self.player.set_state(gst.STATE_PAUSED)
-				self._ready.wait()
+#				s=self.player.set_state(gst.STATE_PAUSED)
+#				self._ready.wait()
 				return True
 		else: return False
 			
