@@ -83,31 +83,7 @@ class PlayerPlaylist(Player,Playlist):
 		return Info(Player.information(self).items() + Playlist.information(self).items())
 
 
-# General configuaration and action on pimp
-class Pimp:
-
-	#
-	def __init__(self):
-		self._stdout=logging.StreamHandler()
-		self._stdoutLogEnable=False
 		
-	# To see or not log messages in the console
-	def toggleStdoutLog(self,level=logging.INFO):
-		if self._stdoutLogEnable :
-			logging.getLogger().removeHandler(self._stdout)
-		else:
-			logging.getLogger().addHandler(self._stdout)
-		
-		self._stdoutLogEnable=not self._stdoutLogEnable
-		
-		
-
-defaultPlaylist = [
-    "/home/mpd/zic/enc/no_doubt/tragic_kingdom/02-excuse_me_mr.flac",
-    "/home/mpd/zic/enc/no_doubt/tragic_kingdom/03-just_a_girl.flac",
-    "/home/mpd/zic/enc/no_doubt/tragic_kingdom/14-tragic_kingdom.flac",
-    "/home/mpd/zic/enc/no_doubt/tragic_kingdom/05-different_people.flac"
-    ]
 
 player = PlayerPlaylist()
 """ Main object """

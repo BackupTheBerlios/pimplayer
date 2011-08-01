@@ -13,9 +13,8 @@ parser.add_option("-u", "--db-username", dest="db_username",
 parser.add_option("--db-passwd", dest="db_password",
                   help="password to access database")
 parser.add_option("-v", "--verbose",
-                  action="store_true", dest="verbose")
-parser.add_option("-q", "--quiet",
-                  action="store_false", dest="verbose")
+                  action="store_true", dest="verbose",
+                  help="print message on stdout (message are also written in .pimp.log)")
 
 (options, args) = parser.parse_args()
 if (options.mpd_port == None 
@@ -28,6 +27,9 @@ if (options.mpd_port == None
 import sys,os
 sys.path.insert(0,os.path.abspath("./src/"))
 from pimp import *
+
+if options.verbose: common.Log.To_stdout(True)
+
 
 # Start Pimp
 # ==========

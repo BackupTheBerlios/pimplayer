@@ -1,11 +1,23 @@
 import logging
-level=logging.DEBUG
 
-logging.basicConfig(level=level,format='%(levelname)6s %(asctime)s  %(filename)s %(funcName)s() > %(message)s')
-#logging.basicConfig(filename='.pimp.log',level=level,format='%(asctime)s %(levelname)s %(filename)s %(funcName)s() > %(message)s')
+class Log:
+    """ Logging configuration """
+    _stdoutLogEnable=False
+    _logfile='.pimp.log'
+    _format='%(levelname)6s %(asctime)s  %(filename)s %(funcName)s() > %(message)s'
+    _stdout=logging.StreamHandler()
 
+    logging.basicConfig(filename=_logfile,level=logging.INFO,format=_format)
 
-#logging.basicConfig(level=level)
+    @staticmethod
+    def To_stdout(state=True):
+        """To see or not log messages in the console"""
+        if Log._stdoutLogEnable and state == False:
+            logging.getLogger().removeHandler(Log._stdout)
+            Log._stdoutLogEnable=False
+        elif state==True:
+            logging.getLogger().addHandler(Log._stdout)
+            Log._stdoutLogEnable=True
 
 version="1.2"
 
