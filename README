@@ -1,9 +1,9 @@
 About
 -----
 
-Pimp is a music player on a client server model. The player can be
-controlled with a mpd client or via an pyton interpreter. File system
-can be directly played and it is record in a database. Files are
+Pimp is a music player with a client server model. The player can be
+controlled with a mpd client or via an pyton interpreter. Files system
+can be directly played and file paths are recorded in a database. Files are
 identified by a 'fingerprint' which permits to identify an audio file over
 file moving and tag modification.
 
@@ -13,6 +13,17 @@ etc in order to get playlists or statistics.
 Pimp is based on pygst for the audio part and sqlalchmy for the data
 part.
 
+To submit patches, bugs ... go to `project homepage <https://developer.berlios.de/projects/pimplayer/>`_ .
+
+
+Get it
+------
+Currently, you have to use git ::
+	   
+	   $ git clone git://git.berlios.de/pimplayer 
+	   
+or you can `browse source code <http://git.berlios.de/cgi-bin/gitweb.cgi?p=pimplayer;a=summary>`_ .
+	
 
 Run it
 ------
@@ -20,28 +31,26 @@ Run it
 * Create a mysql database 'pimp_db' (tables are created by pimp if not exist)
 * Run :: 
   			
-     # python main.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp 2 > 1 > /dev/null &
+     $ python main.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
      
  or with a pyton interpreter ::
 
-     # python -i pimpreter.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
-       >>> player.append("/a/song")
-       >>> player.play()
-
+     $ python -i pimpreter.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
+     
 
 Use it
 ------
 * With mpc::
   
-     # mpc -p 9999 add /a/song 
-     # mpc -p 9999 play
+     $ mpc -p 9999 add /a/song  # Use absolute path
+     $ mpc -p 9999 play
      
 * With pimpreter::
   
   >>> player.append("/a/song")
   >>> player.play()
 
-  You can use tabulation on player object.
+  You can use tabulation on player object which is documented in :doc:`reference`
 
 * Note and Comment in pimpreter::
 
@@ -61,4 +70,5 @@ Limits
 ------
 * Just 3 audio formats are currently available: mp3, ogg, flac.
   But it's not so hard to add them: add them in File module
-* Mpd library doesn't exist.
+* Mpd library isn't currently supported.
+* Many others ...
