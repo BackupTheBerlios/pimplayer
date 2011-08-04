@@ -50,16 +50,19 @@ def infoRepr(i):
 
 Info.__repr__=infoRepr
 
+# class list(list): pass
 # def listRepr(l):
 #     acc=""
-#     for l in i:
+#     for i in l:
 #         acc=acc + str(i) + "\n"
 #     return acc
 
 # list.__repr__=listRepr
+
+
     
 
-atexit.register(quit)
+atexit.register(main.quit)
 
 # anything not deleted (sys and os) will remain in the interpreter session
 del atexit, readline, rlcompleter, save_history, historyPath, os, sys

@@ -28,14 +28,6 @@ class Playlist:
 		self.init = True # Hack to have the first element on the first 'getNext()' call
 		self.version=0
 
-	def append(self,path):
-		""" Append a song to the playlist.
-		Increase playlist version."""
-		try :
-			s=self.cls_song(path)
-			self._playlist.append(s)
-			self.version=self.version+1
-		except FileNotSupported:pass
 
 	def appends(self,paths): 
 		""" Call many time self.append then increase many time playlist version !"""
@@ -72,6 +64,26 @@ class Playlist:
 		return None
 
 	def __getitem__(self,idx):return self.getByPos(idx)
+	def __setitem__(self,idx,path):
+		""" Append a song to the playlist.
+		Increase playlist version."""
+		self._playlist.append("iop")
+	
+		try :
+			s=self.cls_song(path)
+			self._playlist.append(s)
+			self.version=self.version+1
+		except FileNotSupported:pass
+
+
+	def append(self,path):
+		""" Append a song to the playlist.
+		Increase playlist version."""
+		try :
+			s=self.cls_song(path)
+			self._playlist.append(s)
+			self.version=self.version+1
+		except FileNotSupported:pass
 			
 	
 	def getByPos(self,pos,setCurrent=False):
@@ -171,10 +183,10 @@ class Playlist:
 		print " Pos | Path"
 		if context:
 			for i in range(-context,0):
-				print "%s%4s | %s" % (" ",self.getCurrentPos()+i % self.length(),os.path.split(self.__getStep(i).path)[1])
+				print "%s%4s | %s" % (" ",(self.getCurrentPos()+i) % self.length(),os.path.split(self.__getStep(i).path)[1])
 			print "%s%4s | %s" % (">",self.getCurrentPos(),os.path.split(self.__getStep(0).path)[1])
 			for i in range(1,context+1):
-				print "%s%4s | %s" % (" ",self.getCurrentPos()+i % self.length(),os.path.split(self.__getStep(i).path)[1])
+				print "%s%4s | %s" % (" ",(self.getCurrentPos()+i) % self.length(),os.path.split(self.__getStep(i).path)[1])
 				
 		else:
 			for e in self._playlist:
