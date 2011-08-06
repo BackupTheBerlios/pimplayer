@@ -5,9 +5,9 @@ Module Documentation
 * :mod:`pimp.core.pimp`
 * :mod:`pimp.core.playlist`
 * :mod:`pimp.core.song`
-* :mod:`pimp.core.tag`
+* :mod:`pimp.extensions.tag`
+* :mod:`pimp.extensions.player_event`
 * :mod:`pimp.handlers.mpd`
-
 
 Pimp
 ----
@@ -42,8 +42,14 @@ Player
 
 Tags
 ----
-.. automodule:: pimp.core.tag
+.. automodule:: pimp.extensions.tag
    :members:
+
+Player Events
+-------------
+.. automodule:: pimp.extensions.player_event
+   :members:
+
 
 Mpd Handler
 -----------
