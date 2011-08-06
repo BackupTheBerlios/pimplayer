@@ -7,38 +7,34 @@ from db import *
 import common
 
 
-class PlayerPlaylist(Player,Playlist):
+class PlayerPlaylist(object,Player,Playlist):
 	"""PlayerPlaylist is a Player and a Playlist of Song.
-	Moreover, all action on player (play,next ...) are logged.
+	Moreover, some actions on player (play,next ...) can be hooked
+	(see commmon.Hook.HookMethod decorator)
 	
 	All methods of this class should be safe. For instance, the stop
 	method test the status of the player to know if the stop action
 	really occured.
+	"""
 	
-	Decorator common.Guard.locked is used to ensure that only one event
-	is emitted on a player action. For instance, the next method call
-	the play method, and we don't want to emit two events. Be careful with thread !"""
+	__metaclass__=common.Hook
+
 	def __init__(self,playlist=[]):
 		Player.__init__(self)
 		Playlist.__init__(self,Song,playlist)
 
-        @common.Guard.locked
+        @common.Hook.HookMethod
 	def play(self,selector=Playlist.getCurrent):
 		if Player.play(self,selector(self,setCurrent=True).path):
-			pitem=Playlist.getCurrent(self)
-			Guard.guard(lambda : Play.Add(pitem.path,pitem.duration,"playid"))
+			return (Playlist.getCurrent(self).path
+				,Playlist.getCurrent(self).duration)
+		else : return None
 
-        @common.Guard.locked
-	def next(self):	
-		self.play(Playlist.getNext)
-		pitem=Playlist.getCurrent(self)
-		Guard.guard(lambda : Play.Add(pitem.path,pitem.duration,"next"))
+        @common.Hook.HookMethod
+	def next(self):	return self.play(Playlist.getNext)
 
-        @common.Guard.locked
-	def prev(self):	
-            self.play(Playlist.getPrev)
-	    pitem=Playlist.getCurrent(self)
-            Guard.guard(lambda : Play.Add(pitem.path,pitem.duration,"prev"))
+        @common.Hook.HookMethod
+	def prev(self):	return self.play(Playlist.getPrev)
             
 	def playId(self,idx): 
             self.play(lambda a , setCurrent : Playlist.getById(a,idx,setCurrent))
@@ -46,21 +42,20 @@ class PlayerPlaylist(Player,Playlist):
 	def playPos(self,idx): 
             self.play(lambda a , setCurrent : Playlist.getByPos(a,idx,setCurrent))
 
+        @common.Hook.HookMethod
+	def queue(self): return self.next()
 
-        @common.Guard.locked
-	def queue(self): 
-            self.next()
-	    pitem=Playlist.getCurrent(self)
-            Guard.guard(lambda : Play.Add(pitem.path,pitem.duration,"queue"))
-
-        @common.Guard.locked
+        @common.Hook.HookMethod
         def stop(self):
             if Player.status(self) != 'stop':
-                pos=self.information()['position']
-                Player.stop(self)
-                Guard.guard(lambda : Stop.Add(Playlist.getCurrent(self).path,pos))
+		    pos=self.information()['position']
+		    path=Playlist.getCurrent(self).path
+		    Player.stop(self)
+		    return (path,pos)
+	    else: return None
 
-        @common.Guard.locked
+
+        @common.Hook.HookMethod
         def pause(self):
             if Player.status(self) != 'stop':
                 pos=self.information()['position']
@@ -70,45 +65,20 @@ class PlayerPlaylist(Player,Playlist):
                 elif status=="pause":
                     status="unpause"
                 Player.pause(self)
-                Guard.guard(lambda : Pause.Add(Playlist.getCurrent(self).path,pos,status))
+                return (Playlist.getCurrent(self).path,pos,status)
+	    else : return None
 
-
-        @common.Guard.locked
+        @common.Hook.HookMethod
 	def seek(self,time):
+		if Player.status(self) == 'stop':
+			return None
                 pos=self.information()['position']
 		Player.seek(self,time)
-                Guard.guard(lambda : Seek.Add(Playlist.getCurrent(self).path,pos,time))
+		return (Playlist.getCurrent(self).path,pos,time)
 		
 	def information(self):
 		return Info(Player.information(self).items() + Playlist.information(self).items())
 
 
-		
-
 player = PlayerPlaylist()
 """ Main object """
-
-
-#defaultPlayer = PlayerPlaylist(defaultPlaylist)
-
-#else:
-#	list.__repr__=list__repr__
-
-def list__repr__(l):
-	acc=""
-	for e in l:
-		acc=acc + str(e) + "\n"
-	return acc
-
-# else:
-#     mpd_thread=mpd.startMpdHandler(player,mpd_port)
-# #    mpdHandler=mpd.MpdHandler(mpd.MpdRequestHandler,defaultPlayer)
-
-# if __name__ == "__main__":
-#     mpd.startMpdHandler(player,mpd_port)
-
-# else:
-#     mpd_thread=mpd.startMpdHandler(player,mpd_port)
-# #    mpdHandler=mpd.MpdHandler(mpd.MpdRequestHandler,defaultPlayer)
-
-

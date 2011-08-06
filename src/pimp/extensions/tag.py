@@ -4,9 +4,8 @@ file.
 Because they inherits :class:`FileEvent`, you can use methods from it.
 
 """
-from db import FileEvent , Column, Integer, Db, String
-from pimp import player
-
+from pimp.core.db import FileEvent , Column, Integer, Db, String
+from pimp.core.pimp import player
 
 class Note(Db.Base,FileEvent):
     """ To log a note on a file"""

@@ -28,7 +28,7 @@ if os.path.exists(historyPath):
 atexit.register(save_history)
 
 import main
-from pimp.core.tag import *
+from pimp.extensions.tag import *
 from pimp import *
 
 print "Welcome on pimpreter"

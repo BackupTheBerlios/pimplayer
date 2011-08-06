@@ -86,7 +86,6 @@ class Guard(object):
         return wrapper
 
 
-
 import types
 class Hook(type):
     """ This metaclass permit to hook a class method by several handlers. The
@@ -100,11 +99,15 @@ class Hook(type):
     addresses change) !
 
     The hooked method is called first. And after it, handler methods
-    are called.  You can raise exception in hooked method to bypass
+    are called. If hooked method return None, handler methods are not
+    called, otherwise, they take in arguments the return value of
+    hooked method.
+
+    
+    Note that you can raise exception in hooked method to bypass
     handler methods : they are then not called.
     """
 
-    print "Entering Hook class definition"
     __methods_hooked__=[]
     """ Used to enable 'hooked' method by metaclass """
     def __new__(metacls, name, bases, dct):
@@ -114,10 +117,10 @@ class Hook(type):
             @Guard.locked
             def _handle(self, *args, **kwargs):
                 res=method(self, *args, **kwargs)
+                if res == None : return res
                 handlers=self.__getattribute__(name).__handlers__
-                print "handlers " , handlers
                 for f in handlers:
-                    Guard.guard(f)
+                    Guard.guard(lambda : f(res))
                 return res
             # Renaming
             _handle.__name__ = method.__name__
@@ -130,7 +133,7 @@ class Hook(type):
         newDct = {'__methods_hooked__' : list(Hook.__methods_hooked__)}
         for iname, islot in dct.iteritems():
             if type(islot) is types.FunctionType and islot in Hook.__methods_hooked__:
-                print "Method %s.%s is handled" % (name , iname)
+                print "Hook on method %s.%s" % (name , iname)
                 newDct[iname] = _wrapper(iname, islot)
             else:
                 newDct[iname] = islot
@@ -141,13 +144,14 @@ class Hook(type):
     @staticmethod
     def AddHandler(method,callback):
         """ Attach a handler to a class method """
+        print "Handler %s on method %s" % (callback,method)
         method.__handlers__.append(callback)
+
         
     @staticmethod
     def HookMethod(method):
         """ Used as a Decorator to handle a class method """
         Hook.__methods_hooked__.append(method)
-        print "handle fct " , method
         return method
 
 

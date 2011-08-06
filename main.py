@@ -36,9 +36,6 @@ if options.verbose: common.Log.To_stdout(True)
 
 player.volume(0.2)
 
-#pimp=Pimp()
-
-
 database=options.db_database
 """ Name of database """
 user = options.db_username
@@ -49,11 +46,17 @@ pwd =  options.db_password
 mpd_port = options.mpd_port
 """ Port used by the mpd request handler """
 
-Db.Configure(user,pwd,database)
 
+# Initialiation of extensions
+import pimp.extensions.player_event
+import pimp.extensions.tag
+
+# Initialiation of handlers
 from pimp.handlers.mpd import Mpd
 mpd=Mpd(player,mpd_port)
 
+
+Db.Configure(user,pwd,database)
 
 print "Welcome on Pimp"
 print "---------------"

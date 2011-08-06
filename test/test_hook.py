@@ -10,8 +10,10 @@ class HookException(Exception):pass
 emit an exception instead.
 """
 
-def emit1():raise HookException("emit1")
-def emit2():raise HookException("emit2")
+def emit1(ret):raise HookException("emit1")
+def emit2(ret):raise HookException("emit2")
+def handle1(ret): print "Callback function handle1() call"
+
 
 class TestHook1(object):
     __metaclass__=pimp.core.common.Hook
@@ -34,8 +36,7 @@ class NeestedHook(object):
         return TestHook1().get()
     
 
-def handle1(): print "Callback function handle1() call"
-def handle2(): print "Callback function handle2() call"
+
 
 
 class TestHook(unittest.TestCase):
@@ -64,14 +65,14 @@ class TestHook(unittest.TestCase):
         else: return False
 
     def test_neested(self):
-        """\nTry to hook neested hook method"""
+        """Try to hook neested hook method"""
         TestHook1.AddHandler(TestHook1.get,emit1)
-        NeestedHook.AddHandler(NeestedHook.get,handle2)
+        NeestedHook.AddHandler(NeestedHook.get,handle1)
         try :
             NeestedHook().get()
         except : self.fail()
 
-
+        
 
 if __name__ == '__main__':
     unittest.main()
