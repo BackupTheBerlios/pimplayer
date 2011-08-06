@@ -7,11 +7,19 @@ can be directly played and file paths are recorded in a database. Files are
 identified by a 'fingerprint' which permits to identify an audio file over
 file moving and tag modification.
 
-Moreover, it logs a lot of events on file such as play, stop, seek,
-etc in order to get playlists or statistics. 
+Pimp aims to be a player framework with a really small core. All
+features should be implemented in extension.
 
-Pimp is based on pygst for the audio part and sqlalchmy for the data
+It is based on pygst for the audio part and sqlalchmy for the data
 part.
+
+It is easy to register functions called on player actions. See
+player_event extension for instance.
+
+* Player_event extension logs a lot of events on file such as play,
+  stop, seek, etc in order to get playlists or statistics.
+
+* Tag extension permit to Note and Comment a song.
 
 To submit patches, bugs ... go to `project homepage <https://developer.berlios.de/projects/pimplayer/>`_ .
 
