@@ -1,21 +1,35 @@
 import logging
+import logging.handlers
 
 class Log:
-    """ Logging configuration """
-    _stdoutLogEnable=False
+    """ Set pimp logging configuration.  All debug level logs are
+    logged in file _logfile. Info level logs are put on stdout by
+    default but can disable with toogle_stdout. 
+    """
     _logfile='.pimp.log'
-    _format='%(levelname)6s %(asctime)s  %(filename)s %(funcName)s() > %(message)s'
-    _stdout=logging.StreamHandler()
+    _formatterFile = logging.Formatter(
+        '%(asctime)-15s %(levelname)-8s File:%(filename)-10s Func:%(funcName)-10s : %(message)s')
+    _handlerFile = logging.handlers.RotatingFileHandler(_logfile, maxBytes=1000000, backupCount=1)
+    _handlerFile.setLevel(logging.DEBUG)
+    _handlerFile.setFormatter(_formatterFile)
 
-    logging.basicConfig(filename=_logfile,level=logging.INFO,format=_format)
+    _formatterStdout = logging.Formatter(
+        '%(levelname)-8s: %(message)s')
+    _handlerStdout=logging.StreamHandler()
+    _handlerStdout.setLevel(logging.INFO)
+    _handlerStdout.setFormatter(_formatterStdout)
+    _stdoutLogEnable=True
 
+    logging.getLogger().addHandler(_handlerStdout)
+    logging.getLogger().addHandler(_handlerFile)
+    
     @staticmethod
-    def To_stdout(state=True):
+    def toggle_stdout():
         """To see or not log messages in the console"""
-        if Log._stdoutLogEnable and state == False:
+        if Log._stdoutLogEnable:
             logging.getLogger().removeHandler(Log._stdout)
             Log._stdoutLogEnable=False
-        elif state==True:
+        else:
             logging.getLogger().addHandler(Log._stdout)
             Log._stdoutLogEnable=True
 
@@ -112,7 +126,6 @@ class Hook(type):
     """ Used to enable 'hooked' method by metaclass """
     def __new__(metacls, name, bases, dct):
         def _wrapper(name, method):
-            print name  ,  method
             # Redefining a function
             @Guard.locked
             def _handle(self, *args, **kwargs):
@@ -133,7 +146,7 @@ class Hook(type):
         newDct = {'__methods_hooked__' : list(Hook.__methods_hooked__)}
         for iname, islot in dct.iteritems():
             if type(islot) is types.FunctionType and islot in Hook.__methods_hooked__:
-                print "Hook on method %s.%s" % (name , iname)
+                logging.info("Hook on method %s.%s" % (name , iname))
                 newDct[iname] = _wrapper(iname, islot)
             else:
                 newDct[iname] = islot
@@ -144,7 +157,7 @@ class Hook(type):
     @staticmethod
     def AddHandler(method,callback):
         """ Attach a handler to a class method """
-        print "Handler %s on method %s" % (callback,method)
+        print "Handler %s on method %s" % (callback.__name__,method.__name__)
         method.__handlers__.append(callback)
 
         
