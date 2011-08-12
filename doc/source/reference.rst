@@ -10,7 +10,6 @@ Module Documentation
 * :mod:`pimp.handlers.mpd`
 
 
-
 Mpd Handler
 -----------
 .. automodule:: pimp.handlers.mpd

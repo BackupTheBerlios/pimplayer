@@ -7,16 +7,15 @@ import time
 import re 
 import threading
 
-#import test
 from pimp.core.playlist import * 
 from pimp.core.player import * 
 
+logger=logging.getLogger("pimp.mpd")
+logger.setLevel(logging.DEBUG)
 
-# This class treats a request from a mpd client.
-# Just a subset of mpd commands are supported. See Commands variable
 class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
-    Verbose=1
-
+    """This class treats a request from a mpd client.
+    Just a subset of mpd commands are supported. See Commands variable"""
     def __init__(self,RequestHandlerClass,playerPlaylist,port=6600):
         self.player=playerPlaylist
         HOST, PORT = "localhost", port
@@ -141,12 +140,10 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
         "moveid":moveid
         }
 
-# This class manages the connection with a mpd client
 class MpdRequestHandler(SocketServer.StreamRequestHandler):
-    Verbose = 1
-
+    """ This class manages the connection with a mpd client """
     def __init__(self, request, client_address, server):
-        logging.info( "Client connected (%s)" % threading.currentThread().getName())
+        logger.debug( "Client connected (%s)" % threading.currentThread().getName())
         SocketServer.StreamRequestHandler.__init__(self,request,client_address,server)
 
     def handle(self):
@@ -170,16 +167,16 @@ class MpdRequestHandler(SocketServer.StreamRequestHandler):
                     else:
                         cmds.append(self.data)
                         if not cmdlist:break
-                logging.info("Commands received from %s: " % self.client_address[0])
+                logger.debug("Commands received from %s: " % self.client_address[0])
                 for c in cmds:
-                    logging.info("Command '" + c + "'...")
+                    logger.debug("Command '" + c + "'...")
                     msg=msg+self.cmdExec(c)
                     if cmdlist=="list_ok" :  msg=msg+"list_OK\n"
                 msg=msg+"OK\n"
-                logging.debug("Message sent:\n\t\t"+msg.replace("\n","\n\t\t"))
+                logger.debug("Message sent:\n\t\t"+msg.replace("\n","\n\t\t"))
                 self.request.send(msg)
             except IOError,e:
-                logging.info("Client disconnected (%s)"% threading.currentThread().getName())
+                logger.debug("Client disconnected (%s)"% threading.currentThread().getName())
                 break
 
     def cmdExec(self,c):
@@ -187,16 +184,16 @@ class MpdRequestHandler(SocketServer.StreamRequestHandler):
             pcmd=[m.group() for m in re.compile('(\w+)|("([^"])+")').finditer(c)] # WARNING An argument cannot contains a '"'
             cmd=pcmd[0]
             args=[a[1:len(a)-1] for a in pcmd[1:]]
-            logging.info("Command received : %s %s" % (cmd,args))
+            logger.debug("Command received : %s %s" % (cmd,args))
             msg=self.server.Command[cmd](self.server,args)
             if msg==None : msg=""
         except KeyError:
-            logging.info("Command '%s' is not supported!" % cmd)
+            logger.debug("Command '%s' is not supported!" % cmd)
             msg=""
         except:
             print "Unexpected error:", sys.exc_info()[0]
             raise
-        logging.debug("Respond:\n\t\t"+msg.replace("\n","\n\t\t"))
+        logger.debug("Respond:\n\t\t"+msg.replace("\n","\n\t\t"))
         return msg
             
 
@@ -212,6 +209,7 @@ class MpdRequestHandler(SocketServer.StreamRequestHandler):
 # If port is not specified, the default MpdHandler port is used (6600).
 class Mpd(object):
     def __init__(self,player,port=None):
+        logger.info("Mpd handler is listening on port %d"%port)
         if port:
             Mpd.server=MpdHandler(MpdRequestHandler,player,port )
         else:
