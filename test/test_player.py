@@ -30,6 +30,24 @@ class TestPlayer(unittest.TestCase):
         for k in range(1,10000):
             self.assertTrue(self.instance.load(data.file_valid))
             self.assertFalse(self.instance.load(data.file_not_exist))
+
+    def test_state(self):
+        self.instance.stop()
+        self.instance.load(data.file_valids[0])
+        self.instance.waitReady()
+        self.instance.seek(40)
+        s1=self.instance.__getstate__()
+
+        self.instance.stop()
+        self.instance.load(data.file_valids[1])
+        self.instance.waitReady()
+        s2=self.instance.__getstate__()
+        self.instance.stop()
+        print "STOP Done"
+        self.assertTrue(self.instance.__setstate__(s1))
+        self.instance.waitReady()
+        s3=self.instance.__getstate__()
+        self.assertEqual(s3,s1)
         
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ from db import *
 import common
 
 
-class PlayerPlaylist(object,Player,Playlist):
+class PlayerPlaylist(Player,Playlist,object):
 	"""PlayerPlaylist is a Player and a Playlist of Song.
 	Moreover, some actions on player (play,next ...) can be hooked
 	(see commmon.Hook.HookMethod decorator)
@@ -22,6 +22,14 @@ class PlayerPlaylist(object,Player,Playlist):
 	def __init__(self,playlist=[]):
 		Player.__init__(self)
 		Playlist.__init__(self,Song,playlist)
+
+	def __getstate__(self):
+		playlist_state=Playlist.__getstate__(self)
+		return player_state
+
+	def __setstate__(self,state):
+		self.stop()
+		Playlist.__setstate__(self,state)
 
         @common.Hook.HookMethod
 	def play(self,selector=Playlist.getCurrent):

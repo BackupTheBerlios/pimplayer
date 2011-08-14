@@ -4,7 +4,7 @@ from db import File
 import os.path
 
 
-class Playlist:
+class Playlist(object):
 	""" A Playlist is a circular buffer of :class:`song`. A
 	:class:`song` must have a path attribute. When a song can not
 	be created, it raises a FileNotSupported.
@@ -62,6 +62,10 @@ class Playlist:
 				return p
 			pos=pos+1
 		return None
+
+
+
+
 
 	def __getitem__(self,idx):return self.getByPos(idx)
 	def __setitem__(self,idx,path):
@@ -198,3 +202,15 @@ class Playlist:
 
 	def mapOnPath(self,fct):
 		return [i for i in (fct(i.path) for i in self._playlist) if i]
+
+
+	# To make playlist a serializable object
+	# --------------------------------------
+	def __getstate__(self):
+	""" Implementation of serialization methods """
+		return {"current" : self.current,
+			"playlist" : self._playlist}
+	def __setstate__(self,state):
+	""" Implementation of deserialization methods """
+		 self.current=state["current"]
+		 self._playlist=state["playlist"]

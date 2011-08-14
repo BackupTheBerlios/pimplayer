@@ -9,7 +9,7 @@ import gst
 from common  import Info,logging #,Guard
 #from playlist import * 
 
-class Player:
+class Player(object):
 	"""Player is a simple audio player based on pygst. It's just
 	able to play a file and do some basic operation on it such as
 	:func:`seek` ...
@@ -25,7 +25,12 @@ class Player:
 	
 	To avoid leaking (socket, thread), :func:`stop` method MUST BE explicitly used.
 
-	_ready is an threading.Event to wait the change of the gst status (don't tested ...)
+	To block until player is ready, use blocking waitReady function. The
+	player is set unready in stop method and set ready when a
+	message READY is received from pygst
+
+	__setstate__(state) and __getstate__() methods permit to save
+	and load a player state.
 
 	TODO: The player should have a queue song to manage crossfading.
 	"""
@@ -40,7 +45,7 @@ class Player:
 		self.bus.add_signal_watch()
 		self.bus_handler_id=self.bus.connect("message", self._on_message)
 		thread.start_new_thread(self._startMainloop, ())
-#		self._ready=threading.Event()
+		self._ready=threading.Event()
 		if filepath != None :
 			self.load(filepath)
 
@@ -58,7 +63,26 @@ class Player:
 		gobject.threads_init()
 		self.loop.run()
 
+	def __getstate__(self):
+		""" Return a state dict which is used to set state later. """
+		return self.information()
 
+	def __setstate__(self,state):
+		""" Load a state into this player. To load a state,
+		the player must be stopped. After loading, the player
+		is paused.
+		
+		:rtype: True if state has been loaded, False otherwise.
+		"""
+		if state["gstPlayedFile"]!=None:
+			if self.load(state["gstPlayedFile"][7:]): # shitty hack ... 
+				if state["position"]!=None:
+					self.waitReady()
+					self.seek(state["position"])
+				return True
+			else : return False
+		return True
+		
 
 	def _on_message(self, bus, message):
 		t = message.type
@@ -71,13 +95,21 @@ class Player:
 			err, debug = message.parse_error()
 			self.handle_error()
 			logging.debug("pygst error: %s | %s" % (err, debug))
-		# elif t == gst.MESSAGE_STATE_CHANGED:
-		# 	if message.src is self.player:
-		# 		old, new, pending = message.parse_state_changed()
-		# 		if new==gst.STATE_READY:
-		# 			self._ready.set()
-		# 		if new==gst.STATE_NULL:
-		# 			self._ready.clear()
+		elif t == gst.MESSAGE_STATE_CHANGED:
+			if message.src is self.player:
+				old, new, pending = message.parse_state_changed()
+				if new==gst.STATE_PAUSED:
+					self._ready.set()
+				# if pending==gst.STATE_NULL or new==gst.STATE_NULL: # !!! Sometimes,even if stop method is called, this message is not sent ... WHY ?
+				# 	print "CLEAR"
+				# 	self._ready.clear()
+
+
+
+
+	def waitReady(self):
+		""" Wait until the player is set to paused state """
+		self._ready.wait()
 
 
 	def seek(self,t):
@@ -142,8 +174,6 @@ class Player:
 				if s ==  gst.STATE_CHANGE_FAILURE:
 					logging.debug("File can not be loaded %s" % filepath)
 					return False
-#				s=self.player.set_state(gst.STATE_PAUSED)
-#				self._ready.wait()
 				return True
 		else: return False
 			
@@ -165,6 +195,8 @@ class Player:
 	def stop(self):
 		""" To stop a played file. This method is not safe """
 		self.player.set_state(gst.STATE_NULL)
+		self._ready.clear()
+
 
 	# Should use "about-signal". See TODO
 	def queue(self):
