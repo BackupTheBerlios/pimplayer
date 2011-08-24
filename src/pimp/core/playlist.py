@@ -5,52 +5,6 @@ import os.path
 
 logger=logging.getLogger("playlist")
 logger.setLevel(logging.INFO)
-
-# class Test(type):
-# #	__version=0
-# 	def __new__(metacls, name, bases, dct):
-# 		print name , bases
-# 		listdict=bases[0].__dict__
-# 		def _wrapper(name, method):
-# 			# Redefining a function
-# 			def _handle(self, *args, **kwargs):
-# 				self.__version__+=1
-# 				print iop
-# 				return method(self, *args, **kwargs)
-# #                if res == None : return res
-# #                handlers=self.__getattribute__(name).__handlers__
-# #                for f in handlers:
-# #                    Guard.guard(lambda : f(res))
-# #                return res
-# # Renaming
-# 			_handle.__name__ = method.__name__
-# 			_handle.__doc__  = method.__doc__
-# 			_handle.__dict__.update(method.__dict__)
-# 			return _handle
-
-#         # Class method decorated with HookMethod are replaced by _handle methods.
-# 		dct.update(listdict)
-# 		dct.update({"__version__":0})
-# 		print dct
-# 		print type(dct["append"])  #is types.MethodType
-# 		for iname, islot in dct.iteritems():
-# 			if type(islot) is types.MethodType and iname in ["append"]:
-# 				print "iop"
-# 				dct[iname] = _wrapper(iname, islot)
-# 			else:
-# 				dct[iname] = islot
-# 		# Preparation for next class ...
-# 		return type.__new__(metacls, name, bases, dct)
-
-
-
-
-# class VersionnedList2(list):
-# 	__metaclass__=Test
-# #	def __new__(cls,*args):
-# #		return type.__new__(list,*args)
-# #	def __init__(self,*args):list.__init__(self,*args)	
-
 	
 class VersionnedList(list):
 	""" A VersionnedList is a list where all mutation methods
@@ -90,9 +44,6 @@ class VersionnedList(list):
 	def sort(self,*args,**kwargs):
 		self.__version+=1
 		return list.sort(self,*args,**kwargs)
-
-
-
 
 
 class Playlist(VersionnedList,object):
