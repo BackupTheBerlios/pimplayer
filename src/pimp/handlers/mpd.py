@@ -10,8 +10,8 @@ import threading
 from pimp.core.playlist import * 
 from pimp.core.player import * 
 
-logger=logging.getLogger("pimp.mpd")
-logger.setLevel(logging.DEBUG)
+logger=logging.getLogger("mpd")
+logger.setLevel(logging.INFO)
 
 class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
     """This class treats a request from a mpd client.
@@ -43,6 +43,9 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
                 ("audio: 0:?:0\n")+
                 ("nextsong: 1\n") +
                 ("nextsongid: 1\n"))
+
+    def __idToIdx(self,id):
+        return ([e.id for e in self.player]).index(id)
                 
     def toMpdPlaylist(self,playlist):
         ret=""
@@ -73,15 +76,15 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
     def toMpdDir(self,path):
         return "directory: "+path+"\n"
 
-    def plchanges(self,args):return self.toMpdPlaylist(self.player._playlist)
+    def plchanges(self,args):return self.toMpdPlaylist(self.player[:])
 
-    def playlist_info(self,args):return self.toMpdPlaylist(self.player._playlist)
+    def playlist_info(self,args):return self.toMpdPlaylist(self.player[:])
 
-    def add(self,args): self.player.append(args[0])
+    def add(self,args): self.player.appendByPath(args[0])
 
     def play(self,args):
         if args:
-            self.player.playPos(int(args[0]))
+            self.player.play(int(args[0]))
             return
             
         if self.player.status() == "pause":
@@ -90,23 +93,23 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
             self.player.play()
     def stop(self,args):self.player.stop()
     def currentsong(self,args):
-        if self.player.getCurrent() == None:
-            return None
-        else:
-            return self.toMpdPlaylistItem(self.player.getCurrent().path,self.player.getCurrent().id,self.player.getCurrentPos(),self.player.getCurrent().duration)
+            return self.toMpdPlaylistItem(self.player.current().path,self.player.current().id,self.player.getCurrentIdx(),self.player.current().duration)
+
     def next(self,args):self.player.next()
     def prev(self,args):self.player.prev()
-    def playid(self,args):self.player.playId(int(args[0]))
+    def playid(self,args):self.player.play(self.__idToIdx(int(args[0])))
     def pause(self,args):self.player.pause()
-    def delete(self,args):self.player.remove(int(args[0]))
-    def deleteid(self,args):self.player.removeId(int(args[0]))
-    def clear(self,args):self.player.clear()
+    def delete(self,args):del(self.player[int(args[0])])
+    def deleteid(self,args):del(self.player[self.__idToIdx(int(args[0]))])
+    def clear(self,args):del(self.player[:])
     def volume(self,args):self.player.volume(float(args[0])/100)
     def seek(self,args):
-        print args
         self.player.seek(int(args[1]))
     def move(self,args):self.player.move(int(args[0]),int(args[1]))
-    def moveid(self,args):self.player.moveById(int(args[0]),int(args[1]))
+    def moveid(self,args):
+        ifrom = self.__idToIdx(int(args[0]))
+        ito = self.__idToIdx(int(args[1]))
+        self.player.move(ifrom,ito)
     
 
    #Doesn't work
@@ -188,10 +191,13 @@ class MpdRequestHandler(SocketServer.StreamRequestHandler):
             msg=self.server.Command[cmd](self.server,args)
             if msg==None : msg=""
         except KeyError:
-            logger.debug("Command '%s' is not supported!" % cmd)
+            logger.warning("Command '%s' is not supported!" % cmd)
+            msg=""
+        except IndexError:
+            logger.debug("Playlist may be empty when command %s occured" % cmd)
             msg=""
         except:
-            print "Unexpected error:", sys.exc_info()[0]
+            logger.critical("Unexpected error on command %s: %s" % (c,sys.exc_info()[0]))
             raise
         logger.debug("Respond:\n\t\t"+msg.replace("\n","\n\t\t"))
         return msg

@@ -49,6 +49,7 @@ class Player(object):
 		if filepath != None :
 			self.load(filepath)
 
+
 	def quit(self):
 		"""Stop player, stop loop, clean bus"""
 		logging.debug("Quit player")

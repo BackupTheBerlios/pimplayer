@@ -3,8 +3,9 @@ from player import *
 from playlist import *
 from song import *
 
-from db import *
 import common
+
+logger=common.logging.getLogger("pimp.pimp")
 
 
 class PlayerPlaylist(Player,Playlist,object):
@@ -19,9 +20,11 @@ class PlayerPlaylist(Player,Playlist,object):
 	
 	__metaclass__=common.Hook
 
+
 	def __init__(self,playlist=[]):
 		Player.__init__(self)
 		Playlist.__init__(self,Song,playlist)
+		
 
 	def __getstate__(self):
 		playlist_state=Playlist.__getstate__(self)
@@ -31,24 +34,24 @@ class PlayerPlaylist(Player,Playlist,object):
 		self.stop()
 		Playlist.__setstate__(self,state)
 
-        @common.Hook.HookMethod
-	def play(self,selector=Playlist.getCurrent):
+	def __play(self,selector=Playlist.current):
 		if Player.play(self,selector(self,setCurrent=True).path):
-			return (Playlist.getCurrent(self).path
-				,Playlist.getCurrent(self).duration)
+			return (Playlist.current(self).path
+				,Playlist.current(self).duration)
 		else : return None
 
         @common.Hook.HookMethod
-	def next(self):	return self.play(Playlist.getNext)
+	def next(self):	return self.__play(Playlist.getNext)
 
         @common.Hook.HookMethod
-	def prev(self):	return self.play(Playlist.getPrev)
+	def prev(self):	return self.__play(Playlist.getPrev)
             
-	def playId(self,idx): 
-            self.play(lambda a , setCurrent : Playlist.getById(a,idx,setCurrent))
-
-	def playPos(self,idx): 
-            self.play(lambda a , setCurrent : Playlist.getByPos(a,idx,setCurrent))
+        @common.Hook.HookMethod
+	def play(self,idx=None):
+		if idx:
+			return self.__play(lambda a , setCurrent : Playlist.get(a,idx,setCurrent))
+		else:
+			return self.__play()
 
         @common.Hook.HookMethod
 	def queue(self): return self.next()
@@ -57,7 +60,7 @@ class PlayerPlaylist(Player,Playlist,object):
         def stop(self):
             if Player.status(self) != 'stop':
 		    pos=self.information()['position']
-		    path=Playlist.getCurrent(self).path
+		    path=Playlist.current(self).path
 		    Player.stop(self)
 		    return (path,pos)
 	    else: return None
@@ -73,7 +76,7 @@ class PlayerPlaylist(Player,Playlist,object):
                 elif status=="pause":
                     status="unpause"
                 Player.pause(self)
-                return (Playlist.getCurrent(self).path,pos,status)
+                return (Playlist.current(self).path,pos,status)
 	    else : return None
 
         @common.Hook.HookMethod
@@ -82,10 +85,11 @@ class PlayerPlaylist(Player,Playlist,object):
 			return None
                 pos=self.information()['position']
 		Player.seek(self,time)
-		return (Playlist.getCurrent(self).path,pos,time)
+		return (Playlist.current(self).path,pos,time)
 		
 	def information(self):
 		return Info(Player.information(self).items() + Playlist.information(self).items())
+
 
 
 player = PlayerPlaylist()

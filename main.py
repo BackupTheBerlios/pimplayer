@@ -26,37 +26,40 @@ if (options.mpd_port == None
     
 import sys,os
 sys.path.insert(0,os.path.abspath("./src/"))
-from pimp import *
 
-if options.verbose: common.Log.To_stdout(True)
+# For verbose mode
+# ================
+from pimp.core.common import Log
+if options.verbose: Log.toggle_stdout()
 
-
-# Start Pimp
-# ==========
-
+# Start Pimp player
+# =================
+from pimp.core.pimp import player
 player.volume(0.2)
 
+# Initialisation of extensions
+# ============================
+import pimp.extensions.player_event
+import pimp.extensions.tag
+
+# Initialisation of handlers
+# ==========================
+mpd_port = options.mpd_port
+""" Port used by the mpd request handler """
+from pimp.handlers.mpd import Mpd
+mpd=Mpd(player,mpd_port)
+
+# Initialisation of database
+# ==========================
 database=options.db_database
 """ Name of database """
 user = options.db_username
 """ User to use the database """
 pwd =  options.db_password
 """ Password of database user"""
-
-mpd_port = options.mpd_port
-""" Port used by the mpd request handler """
-
-
-# Initialiation of extensions
-import pimp.extensions.player_event
-import pimp.extensions.tag
-
-# Initialiation of handlers
-from pimp.handlers.mpd import Mpd
-mpd=Mpd(player,mpd_port)
-
-
+from pimp.core.db import Db
 Db.Configure(user,pwd,database)
+
 
 print "Welcome on Pimp"
 print "---------------"
