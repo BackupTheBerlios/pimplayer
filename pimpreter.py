@@ -27,9 +27,14 @@ if os.path.exists(historyPath):
 
 atexit.register(save_history)
 
+# Initialisation of Pimp
+# ======================
 import main
 from pimp.extensions.tag import *
-from pimp import *
+from pimp.extensions.player_event import *
+from pimp.core.song import *
+from pimp.core.db import File
+
 
 print "Welcome on pimpreter"
 print "--------------------"
@@ -47,20 +52,7 @@ def infoRepr(i):
     for (k,i) in i.items():
         acc=acc + k + ": " + str(i) + "\n"
     return acc
-
 Info.__repr__=infoRepr
-
-# class list(list): pass
-# def listRepr(l):
-#     acc=""
-#     for i in l:
-#         acc=acc + str(i) + "\n"
-#     return acc
-
-# list.__repr__=listRepr
-
-
-    
 
 atexit.register(main.quit)
 

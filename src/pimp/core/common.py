@@ -6,6 +6,9 @@ class Log:
     logged in file _logfile. Info level logs are put on stdout by
     default but can disable with toogle_stdout. 
     """
+    logger=logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
     _logfile='.pimp.log'
     _formatterFile = logging.Formatter(
         '%(asctime)-15s %(levelname)-8s File:%(filename)-10s Func:%(funcName)-10s : %(message)s')
@@ -18,20 +21,24 @@ class Log:
     _handlerStdout=logging.StreamHandler()
     _handlerStdout.setLevel(logging.INFO)
     _handlerStdout.setFormatter(_formatterStdout)
-    _stdoutLogEnable=True
+    _stdoutLogEnable=False
 
-    logging.getLogger().addHandler(_handlerStdout)
-    logging.getLogger().addHandler(_handlerFile)
+    if _stdoutLogEnable: 
+        logger.addHandler(_handlerStdout)
+    logger.addHandler(_handlerFile)
     
     @staticmethod
     def toggle_stdout():
         """To see or not log messages in the console"""
         if Log._stdoutLogEnable:
-            logging.getLogger().removeHandler(Log._stdout)
+            logging.getLogger().removeHandler(Log._handlerStdout)
             Log._stdoutLogEnable=False
         else:
-            logging.getLogger().addHandler(Log._stdout)
+            logging.getLogger().addHandler(Log._handlerStdout)
             Log._stdoutLogEnable=True
+
+#logging.basicConfig(level=logging.INFO)
+logger=logging.getLogger("commmon")
 
 version="1.2"
 
@@ -125,6 +132,7 @@ class Hook(type):
     __methods_hooked__=[]
     """ Used to enable 'hooked' method by metaclass """
     def __new__(metacls, name, bases, dct):
+        print name , bases
         def _wrapper(name, method):
             # Redefining a function
             @Guard.locked
@@ -146,7 +154,7 @@ class Hook(type):
         newDct = {'__methods_hooked__' : list(Hook.__methods_hooked__)}
         for iname, islot in dct.iteritems():
             if type(islot) is types.FunctionType and islot in Hook.__methods_hooked__:
-                logging.info("Hook on method %s.%s" % (name , iname))
+                logger.debug("Hook on method %s.%s" % (name , iname))
                 newDct[iname] = _wrapper(iname, islot)
             else:
                 newDct[iname] = islot
@@ -157,7 +165,7 @@ class Hook(type):
     @staticmethod
     def AddHandler(method,callback):
         """ Attach a handler to a class method """
-        print "Handler %s on method %s" % (callback.__name__,method.__name__)
+        print ("Handler %s on method %s" % (callback.__name__,method.__name__))
         method.__handlers__.append(callback)
 
         

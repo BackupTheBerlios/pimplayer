@@ -23,6 +23,9 @@ class Song(object):
 	def __repr__(self):
 		return "%4s | %4ss | %s" % (self.id,self.duration,self.path)
 
+	def getPath(self):
+		return self.path
+
 	def show(self):
 		return "%4s | %4ss | %s" % (self.id,self.duration,self.path)
 

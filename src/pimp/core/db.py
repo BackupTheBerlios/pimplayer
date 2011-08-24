@@ -93,7 +93,7 @@ class File(Db.Base):
 
     @staticmethod
     def Find(path):
-        """ Find a file with path in table file """
+        """ Return a File object from a given path or None if it don't exist in database """
         ret=Db.session.query(File).filter(File.path==path).order_by(desc(File.date)).limit(1).first()
         return ret
         

@@ -1,6 +1,9 @@
 import os.path
 
-file_valid=os.path.abspath("data/audio/test.ogg")
+file_valid=os.path.abspath("data/audio/test1.ogg")
+file_valids=[os.path.abspath("data/audio/test1.ogg"),
+             os.path.abspath("data/audio/test2.ogg")]
+
 file_random=os.path.abspath("data/audio/random_data.ogg")
 
 file_not_exist=os.path.abspath("data/audio/notexist")
