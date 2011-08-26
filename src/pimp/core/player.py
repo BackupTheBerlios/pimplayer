@@ -6,7 +6,8 @@ import pygst
 pygst.require("0.10")
 import gst
 
-from common  import Info,logging #,Guard
+from common  import Info,logging,datetime #,Guard
+
 #from playlist import * 
 
 class Player(object):
@@ -122,7 +123,24 @@ class Player(object):
 
 	def information(self):
 		""" To get some information about the loaded file.
-		:func:`load` has to called before."""
+		:func:`load` has to called before.
+
+		If player is stopped, return:
+
+		* status : "play", "pause" or "stop"
+		* volume : int
+		* mute : bool
+
+		Otherwise, it return:
+
+		* status
+		* volume : int
+		* mute : bool
+		* duration : deltatime
+		* position : deltatime
+		* gstPlayedFile : gst uri
+
+		"""
 		common={'volume':self.volume(),
 			'mute':self.player.get_property("mute")}
 		state=self.player.get_state()[1]
@@ -130,8 +148,8 @@ class Player(object):
 			if state == gst.STATE_PLAYING: status="play"
 			if state == gst.STATE_PAUSED: status="pause"
 			infos={'status':status,
-			       'duration':self.player.query_duration(gst.FORMAT_TIME, None)[0] / 1000000000,
-			       'position':self.player.query_position(gst.FORMAT_TIME, None)[0] / 1000000000,
+			       'duration':datetime.timedelta(seconds=self.player.query_duration(gst.FORMAT_TIME, None)[0] / 1000000000),
+			       'position':datetime.timedelta(seconds=self.player.query_position(gst.FORMAT_TIME, None)[0] / 1000000000),
 			       'volume':self.volume(),
 			       'mute':self.player.get_property("mute"),
 			       'gstPlayedFile':self.player.get_property("uri")

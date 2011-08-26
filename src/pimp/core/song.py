@@ -26,8 +26,8 @@ class Song(object):
 	def getPath(self):
 		return self.path
 
-	def show(self):
-		return "%4s | %4ss | %s" % (self.id,self.duration,self.path)
+	def show(self,pathToStr=lambda x : x):
+		return "%4s | %4s | %s" % (self.duration,pathToStr(self.path),self.id)
 
 	def update(self):
 		"""To find information from db. Because an song is

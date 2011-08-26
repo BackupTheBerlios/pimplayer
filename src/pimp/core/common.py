@@ -1,5 +1,6 @@
 import logging
 import logging.handlers
+import datetime
 
 class Log:
     """ Set pimp logging configuration.  All debug level logs are

@@ -7,8 +7,3 @@ Just run pimp.py or pimpreter.py::
      # python -i pimpreter.py -p 9999 -d impdb_dev -u pimp --db-passwd=pimp
 
 
-Dependencies
-============
-* pygst
-* sqlalchemy
-* socketserver

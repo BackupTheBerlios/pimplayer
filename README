@@ -8,13 +8,13 @@ identified by a 'fingerprint' which permits to identify an audio file over
 file moving and tag modification.
 
 Pimp aims to be a player framework with a really small core. All
-features should be implemented in extension.
+features should be implemented in extensions.
 
-It is based on pygst for the audio part and sqlalchmy for the data
+It is based on pygst for the audio part and sqlalchmy for the database
 part.
 
 It is easy to register functions called on player actions. See
-player_event extension for instance.
+player_event extension for examples.
 
 * Player_event extension logs a lot of events on file such as play,
   stop, seek, etc in order to get playlists or statistics.
@@ -35,15 +35,16 @@ or you can `browse source code <http://git.berlios.de/cgi-bin/gitweb.cgi?p=pimpl
 
 Run it
 ------
+* See dependencies section
 * Create a mysql user 'pimp'
 * Create a mysql database 'pimp_db' (tables are created by pimp if not exist)
-* Run :: 
+* Run with an interpreter :: 
   			
-     $ python main.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
-     
- or with a pyton interpreter ::
-
      $ python -i pimpreter.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
+     
+ or for a deamon ::
+
+     $ python main.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
      
 
 Use it
@@ -55,7 +56,7 @@ Use it
      
 * With pimpreter::
   
-  >>> player.append("/a/song")
+  >>> player.appendByPath("/a/song")
   >>> player.play()
 
   You can use tabulation on player object which is documented in :doc:`reference`
@@ -64,7 +65,15 @@ Use it
 
   >>> Note.Add("/a/file",4)
   >>> Comment.OnPlayedFile("a comment")
-  
+
+
+
+Dependencies
+------------
+* pygst : python gstreamer package
+* sqlalchemy >= 0.6 : python sql ORM package
+* socketserver : python package to implement server
+* sox (to generate audiofingerprint)  
        
 Features
 --------
