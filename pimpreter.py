@@ -13,6 +13,9 @@ import readline
 import rlcompleter
 import sys
 
+import pprint
+sys.displayhook=lambda a : pprint.pprint(a)
+
 # change autocomplete to tab
 readline.parse_and_bind("tab: complete")
 
@@ -55,6 +58,7 @@ def infoRepr(i):
 Info.__repr__=infoRepr
 
 atexit.register(main.quit)
+
 
 # anything not deleted (sys and os) will remain in the interpreter session
 del atexit, readline, rlcompleter, save_history, historyPath, os, sys

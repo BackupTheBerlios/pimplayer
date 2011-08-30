@@ -28,7 +28,7 @@ class Play(db.Db.Base,db.FileEvent):
     curTime = db.Column(db.Integer)
     status = db.Column(db.Integer)
 
-    def __init__(self,path,curTime,status,**kwds): 
+    def __init__(self,path,curTime,status,**kwds):
         self.curTime = curTime
         status2db={'playid':Play.PLAYID,'next':Play.NEXT,'prev':Play.PREV,'queue':Play.QUEUE}
         try:self.status = status2db[status]

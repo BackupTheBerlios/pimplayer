@@ -37,6 +37,9 @@ class VersionnedList(list):
 		self.__version+=1
 		return list.__setslice__(self,*args)
 
+	def __getslice__(self,*args):
+		return VersionnedList(list.__getslice__(self,*args))
+
 	def __delslice__(self,*args):
 		self.__version+=1
 		return list.__delslice__(self,*args)
@@ -45,6 +48,11 @@ class VersionnedList(list):
 		self.__version+=1
 		return list.sort(self,*args,**kwargs)
 
+	def __str__(self):
+		acc=""
+		for i in self:
+			acc+=str(i)+"\n"
+		return acc
 
 class Playlist(VersionnedList,object):
 	""" A Playlist is a circular buffer of :class:`song`. A
@@ -153,5 +161,5 @@ class Playlist(VersionnedList,object):
 				self.pop(src)
 		except IndexError: return None
 
-
+	
 

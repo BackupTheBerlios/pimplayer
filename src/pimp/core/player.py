@@ -148,8 +148,8 @@ class Player(object):
 			if state == gst.STATE_PLAYING: status="play"
 			if state == gst.STATE_PAUSED: status="pause"
 			infos={'status':status,
-			       'duration':datetime.timedelta(seconds=self.player.query_duration(gst.FORMAT_TIME, None)[0] / 1000000000),
-			       'position':datetime.timedelta(seconds=self.player.query_position(gst.FORMAT_TIME, None)[0] / 1000000000),
+			       'duration':self.player.query_duration(gst.FORMAT_TIME, None)[0] / 1000000000,
+			       'position':self.player.query_position(gst.FORMAT_TIME, None)[0] / 1000000000,
 			       'volume':self.volume(),
 			       'mute':self.player.get_property("mute"),
 			       'gstPlayedFile':self.player.get_property("uri")

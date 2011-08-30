@@ -43,6 +43,15 @@ logger=logging.getLogger("commmon")
 
 version="1.2"
 
+
+def toPath(a):
+    """ If a is a string return it, otherwise call a.getPath() """
+    if type(a) == str :
+        return a
+    else:
+        return a.getPath()
+    
+
 class FileNotSupported(Exception):pass
 """ Raise it when a file is not supported by Pimp """
 

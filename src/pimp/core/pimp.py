@@ -48,7 +48,7 @@ class PlayerPlaylist(Player,Playlist,object):
             
         @common.Hook.HookMethod
 	def play(self,idx=None):
-		if idx:
+		if idx!=None:
 			return self.__play(lambda a , setCurrent : Playlist.get(a,idx,setCurrent))
 		else:
 			return self.__play()

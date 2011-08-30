@@ -5,7 +5,12 @@ import os.path
 
 class Song(object):
 	""" A Song has an id which is unique. This is used by
-	remote client to have a remote song identifier."""
+	remote client to have a remote song identifier.
+
+	song.__repr__() return the path of a song. This permit to use a song or a filepath in all database methods.
+
+	song.__str__() return a string for printing.
+	"""
 
 	#Used to generate playlist ID
 	Offset=0
@@ -20,8 +25,9 @@ class Song(object):
             self._dbfile=None
             self.update()
 
+
 	def __repr__(self):
-		return "%4s | %4ss | %s" % (self.id,self.duration,self.path)
+		return "%4s | %4ss | %s" % (self.id,datetime.timedelta(seconds=self.duration),self.path)
 
 	def getPath(self):
 		return self.path

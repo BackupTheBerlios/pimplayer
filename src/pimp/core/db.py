@@ -10,7 +10,11 @@ file is already known, the Get method returns the id of the database
 entry. If the path file is not known, an entry is created. For more
 information, see File.Get method information.
 
-To add an event, create a class that inherited FileEvent or Event."""
+To create an new event, create a class that inherited FileEvent or Event.
+
+All method attributes 'song' can be a str or implement getPath() method.
+
+"""
 
 
 import common
@@ -159,9 +163,13 @@ class Event(object):
         return "%s id:%s" % (self.__class__.__name__,self.id)
 
     @classmethod
-    def Last(cls,number=None,til=None):
+    def Lasts(cls,number=None,til=None):
+        """ Return 'number' lasts events or 100 lasts events if number is None """ 
         return Db.session.query(cls).order_by(desc(cls.date)).limit(number or 100).all()
 
+    @classmethod
+    def All(cls):
+        return Db.session.query(cls).all()
     
 class FileEvent(Event):
     """ A fileEvent is an event on a file. """
@@ -175,13 +183,13 @@ class FileEvent(Event):
         return relationship(File,primaryjoin="%s.fileId == File.id" % cls.__name__)
 
     @classmethod
-    def FindByFile(cls,path):
+    def FindByFile(cls,song):
         """ Find all cls events for a given path """
-        return Db.session.query(cls).join(File). filter(File.path==path).all() 
+        return Db.session.query(cls).join(File). filter(File.path==common.toPath(song)).all() 
 
-    def __init__(self,path,**kwds):
+    def __init__(self,song,**kwds):
         Event.__init__(self,**kwds)
-        self.file=File.Get(path)
+        self.file=File.Get(common.toPath(song))
         if self.file == None :
             raise FileError(path)
         self.fileId = self.file.id
