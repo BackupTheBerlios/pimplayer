@@ -35,8 +35,8 @@ class PlayerPlaylist(Player,Playlist,object):
 		Playlist.__setstate__(self,state)
 
 	def __play(self,selector=Playlist.current):
-		if Player.play(self,selector(self,setCurrent=True).path):
-			return (Playlist.current(self).path
+		if Player.play(self,selector(self,setCurrent=True).getPath()):
+			return (Playlist.current(self)
 				,Playlist.current(self).duration)
 		else : return None
 
@@ -60,7 +60,7 @@ class PlayerPlaylist(Player,Playlist,object):
         def stop(self):
             if Player.status(self) != 'stop':
 		    pos=self.information()['position']
-		    path=Playlist.current(self).path
+		    path=Playlist.current(self)
 		    Player.stop(self)
 		    return (path,pos)
 	    else: return None
@@ -76,7 +76,7 @@ class PlayerPlaylist(Player,Playlist,object):
                 elif status=="pause":
                     status="unpause"
                 Player.pause(self)
-                return (Playlist.current(self).path,pos,status)
+                return (Playlist.current(self),pos,status)
 	    else : return None
 
         @common.Hook.HookMethod
@@ -85,7 +85,7 @@ class PlayerPlaylist(Player,Playlist,object):
 			return None
                 pos=self.information()['position']
 		Player.seek(self,time)
-		return (Playlist.current(self).path,pos,time)
+		return (Playlist.current(self),pos,time)
 		
 	def information(self):
 		return Info(Player.information(self).items() + Playlist.information(self).items())

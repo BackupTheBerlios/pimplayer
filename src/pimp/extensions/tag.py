@@ -20,12 +20,7 @@ class Note(db.Db.Base,db.FileEvent):
     def __repr__(self):
         return db.FileEvent.__repr__(self) + " " + str(self.xnote)
         
-    @staticmethod
-    def OnPLayedFile(note):
-        """ Permit to note the currently played file """
-        return Note.Add(player.current().path,note)
-
-
+        
 class Comment(db.Db.Base,db.FileEvent):
     """ To log a comment on a file"""
     __tablename__ = 'comment'
@@ -39,7 +34,3 @@ class Comment(db.Db.Base,db.FileEvent):
     def __repr__(self):
         return db.FileEvent.__repr__(self) + " " + self.text
 
-    @staticmethod
-    def OnPLayedFile(text):
-        """ Permit to comment the currently played file """
-        return Comment.Add(player.current().path,text)

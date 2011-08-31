@@ -12,7 +12,7 @@ information, see File.Get method information.
 
 To create an new event, create a class that inherited FileEvent or Event.
 
-All method attributes 'song' can be a str or implement getPath() method.
+All method attributes 'path' must implement getPath() method. Path class is a string wrapper.
 
 """
 
@@ -25,6 +25,9 @@ from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy.ext.declarative import declared_attr, declarative_base
 
 from datetime import datetime
+
+class Path(str):
+    def getPath(self): return self
 
 class Db(object):
     """This class configures sqlalchemy database engine.
@@ -73,22 +76,22 @@ class File(Db.Base):
         * the modification date in db is older than modification date of the file
 
         """
-        ret=Db.session.query(File).filter(File.path==path).order_by(desc(File.date)).limit(1).first()
+        ret=Db.session.query(File).filter(File.path==path.getPath()).order_by(desc(File.date)).limit(1).first()
         if ret != None:
-            mdfile = modification_date(path)
+            mdfile = modification_date(path.getPath())
             mddb = ret.lastModDate
             if mdfile > mddb:
-                print "File '%s' has been modified" % path
+                print "File '%s' has been modified" % path.getPath()
                 print "A new entry is created"
             else :
                 return ret
-        fm = format_md5(path)
+        fm = format_md5(path.getPath())
         if fm == None :
-            print "Error : format has not been found '%s'" % path
+            print "Error : format has not been found '%s'" % path.getPath()
             return None
-        dur = duration(path)
+        dur = duration(path.getPath())
         if dur == None :
-            print "Error : duration has not been found '%s'" % path
+            print "Error : duration has not been found '%s'" % path.getPath()
             return None
         f=File(path,fm[0],fm[1],dur,frontend=frontend)
         Db.session.add(f)
@@ -98,7 +101,7 @@ class File(Db.Base):
     @staticmethod
     def Find(path):
         """ Return a File object from a given path or None if it don't exist in database """
-        ret=Db.session.query(File).filter(File.path==path).order_by(desc(File.date)).limit(1).first()
+        ret=Db.session.query(File).filter(File.path==path.getPath()).order_by(desc(File.date)).limit(1).first()
         return ret
         
 
@@ -117,8 +120,8 @@ class File(Db.Base):
         self.albumApt = "Unused"
         self.vApt = "TODO;"
         self.format = format
-        self.path = path
-        self.lastModDate = modification_date(path)
+        self.path = path.getPath()
+        self.lastModDate = modification_date(path.getPath())
         self.duration = duration
         
         
@@ -172,7 +175,9 @@ class Event(object):
         return Db.session.query(cls).all()
     
 class FileEvent(Event):
-    """ A fileEvent is an event on a file. """
+    """ A fileEvent is an event on a file.  
+    All method attributes 'path' must implement getPath method.
+    """
     # For sqlalchemy
     @declared_attr
     def fileId(cls):
@@ -183,13 +188,13 @@ class FileEvent(Event):
         return relationship(File,primaryjoin="%s.fileId == File.id" % cls.__name__)
 
     @classmethod
-    def FindByFile(cls,song):
+    def FindByFile(cls,path):
         """ Find all cls events for a given path """
-        return Db.session.query(cls).join(File). filter(File.path==common.toPath(song)).all() 
+        return Db.session.query(cls).join(File). filter(File.path==path.getPath()).all() 
 
-    def __init__(self,song,**kwds):
+    def __init__(self,path,**kwds):
         Event.__init__(self,**kwds)
-        self.file=File.Get(common.toPath(song))
+        self.file=File.Get(path)
         if self.file == None :
             raise FileError(path)
         self.fileId = self.file.id

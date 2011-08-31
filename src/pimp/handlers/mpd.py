@@ -52,7 +52,7 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
         pos=0
         if playlist == [] : return ""
         for i in playlist:
-            ret=ret+self.toMpdPlaylistItem(i.path,i.id,pos,i.duration)
+            ret=ret+self.toMpdPlaylistItem(i.getPath(),i.id,pos,i.duration)
             pos=pos+1
         return ret
 
@@ -93,7 +93,7 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
             self.player.play()
     def stop(self,args):self.player.stop()
     def currentsong(self,args):
-            return self.toMpdPlaylistItem(self.player.current().path,self.player.current().id,self.player.getCurrentIdx(),self.player.current().duration)
+            return self.toMpdPlaylistItem(self.player.current().getPath(),self.player.current().id,self.player.getCurrentIdx(),self.player.current().duration)
 
     def next(self,args):self.player.next()
     def prev(self,args):self.player.prev()
@@ -104,6 +104,7 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
     def clear(self,args):del(self.player[:])
     def volume(self,args):self.player.volume(float(args[0])/100)
     def seek(self,args):
+        print args
         self.player.seek(int(args[1]))
     def move(self,args):self.player.move(int(args[0]),int(args[1]))
     def moveid(self,args):
@@ -137,7 +138,7 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
         "deleteid" : deleteid,
         "clear" : clear,
         "setvol": volume,
-        "seekid":seek,
+        #"seekid":seek,
         "seek":seek,
         "move":move,
         "moveid":moveid
