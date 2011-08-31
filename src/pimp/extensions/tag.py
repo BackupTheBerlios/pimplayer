@@ -8,7 +8,14 @@ import pimp.core.db as db
 from pimp.core.pimp import player
 
 class Note(db.Db.Base,db.FileEvent):
-    """ To log a note on a file"""
+    """ To log a note on a file.
+
+    Some examples::
+
+    >>> Note.Add(player.current(),4)
+    >>> player.sort(key=Note.GetNote,reverse=True)
+    
+    """
     __tablename__ = 'note'
 
     xnote = db.Column(db.Integer)
@@ -19,7 +26,13 @@ class Note(db.Db.Base,db.FileEvent):
 
     def __repr__(self):
         return db.FileEvent.__repr__(self) + " " + str(self.xnote)
-        
+
+    @staticmethod
+    def GetNote(path):
+        try:
+            ns=Note.FindByPath(path)
+            return sum([a.xnote for a in ns]) / len(ns)
+        except ZeroDivisionError: return None
         
 class Comment(db.Db.Base,db.FileEvent):
     """ To log a comment on a file"""

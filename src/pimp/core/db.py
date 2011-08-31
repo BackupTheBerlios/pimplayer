@@ -188,7 +188,7 @@ class FileEvent(Event):
         return relationship(File,primaryjoin="%s.fileId == File.id" % cls.__name__)
 
     @classmethod
-    def FindByFile(cls,path):
+    def FindByPath(cls,path):
         """ Find all cls events for a given path """
         return Db.session.query(cls).join(File). filter(File.path==path.getPath()).all() 
 

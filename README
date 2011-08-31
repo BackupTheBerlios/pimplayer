@@ -63,8 +63,11 @@ Use it
 
 * Note and Comment in pimpreter::
 
-  >>> Note.Add("/a/file",4)
-  >>> Comment.OnPlayedFile("a comment")
+  >>> Note.Add(player.current(),4)
+  >>> Note.GetNote(player.current()) # Compute notes average
+  >>> Comment.Add(player[3],"comments")
+  >>> Note.Add(Url("/a/file"),4)
+  >>> player.sort(key=Note.GetNote,reverse=True) # Sort playlist by note
 
 
 

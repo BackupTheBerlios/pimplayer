@@ -79,9 +79,9 @@ class Playlist(VersionnedList,object):
 		except FileNotSupported:pass
 
 	def current(self,**kwargs):
-		""" Return current song. **kwargs is unsed. (it's just
+		""" Return current song. 'kwargs' is unsed. (t's just
 		here for homogenieity with setCurrent in getNext and
-		other method)"""
+		other method) """
 		return self.__getitem__(self.__current)
 
         def information(self):
