@@ -34,8 +34,10 @@ atexit.register(save_history)
 # ======================
 import main
 from pimp.extensions.tag import *
+from pimp.extensions.context import *
 from pimp.extensions.player_event import *
 from pimp.core.song import *
+from pimp.core.playlist import *
 from pimp.core.db import File
 
 

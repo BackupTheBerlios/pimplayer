@@ -112,6 +112,18 @@ class Playlist(VersionnedList,object):
 		if setCurrent:
 			self.__current = idx
 		return ret
+
+	def getCurrentIdx(self): return self.__current
+
+	def move(self,src,dest):
+		""" Move a song for position src to position dest"""
+		try :
+			if src >= dest:
+				self.insert(dest,self.pop(src))
+			else :
+				self.insert(dest,self[src])
+				self.pop(src)
+		except IndexError: return None
 			
 
 	# To make playlist a serializable object
@@ -119,14 +131,15 @@ class Playlist(VersionnedList,object):
 	def __getstate__(self):
 		""" Implementation of serialization methods """
 		return {"current" : self.__current,
-			"playlist" : self._playlist}
+			"playlist" : self[:]}
 	def __setstate__(self,state):
 		""" Implementation of deserialization methods """
+		del (self[:])
+		for i in state["playlist"]:
+			self.append(i)
 		self.__current=state["current"]
-		self._playlist=state["playlist"]
 
 
-	def getCurrentIdx(self): return self.__current
 
 
 	# Pretty print of the playlist.
@@ -139,27 +152,18 @@ class Playlist(VersionnedList,object):
 		print " Pos | Path"
 		if context:
 			for i in range(-context,0):
-				print "%s%4s | %s" % (" ",(self.__current+i) % len(self),os.path.split(self.__getStep(i).path)[1])
-			print "%s%4s | %s" % (">",self.__current,os.path.split(self.__getStep(0).path)[1])
+				print "%s%4s | %s" % (" ",(self.__current+i) % len(self),os.path.split(self.__getStep(i).getPath())[1])
+			print "%s%4s | %s" % (">",self.__current,os.path.split(self.__getStep(0).getPath())[1])
 			for i in range(1,context+1):
-				print "%s%4s | %s" % (" ",(self.__current+i) % len(self),os.path.split(self.__getStep(i).path)[1])
+				print "%s%4s | %s" % (" ",(self.__current+i) % len(self),os.path.split(self.__getStep(i).getPath())[1])
 		else:
 			for e in self:
 				if e == self.current():
 					cur=">"
 				else: cur=" "
-				print "%s%4s | %s" % (cur,i,os.path.split(e.path)[1])
+				print "%s%4s | %s" % (cur,i,os.path.split(e.getPath())[1])
 				i+=1
 
-	def move(self,src,dest):
-		""" Move a song for position src to position dest"""
-		try :
-			if src >= dest:
-				self.insert(dest,self.pop(src))
-			else :
-				self.insert(dest,self[src])
-				self.pop(src)
-		except IndexError: return None
 
 	
 
