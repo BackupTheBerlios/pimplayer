@@ -8,20 +8,10 @@ identified by a 'fingerprint' which permits to identify an audio file over
 file moving and tag modification.
 
 Pimp aims to be a player framework with a really small core. All
-features should be implemented in extensions.
+features are implemented in extensions.
 
-It is based on pygst for the audio part and sqlalchmy for the database
-part.
-
-It is easy to register functions called on player actions. See
-player_event extension for examples.
-
-* Player_event extension logs a lot of events on file such as play,
-  stop, seek, etc in order to get playlists or statistics.
-
-* Tag extension permit to Note and Comment a song.
-
-To submit patches, bugs ... go to `project homepage <https://developer.berlios.de/projects/pimplayer/>`_ .
+To submit patches, bugs ... go to `project homepage
+<https://developer.berlios.de/projects/pimplayer/>`_ .
 
 
 Get it
@@ -61,6 +51,8 @@ Use it
 
   You can use tabulation on player object which is documented in :doc:`reference`
 
+* With nautilus, songs or directory can be added to pimp playlist. See :doc:`script_readme`.
+
 * Note and Comment in pimpreter::
 
   >>> Note.Add(player.current(),4)
@@ -70,6 +62,19 @@ Use it
   >>> player.sort(key=Note.GetNote,reverse=True) # Sort playlist by note
 
 
+Features
+--------
+* A Mpd client can be used to control Pimp (partially comptatible)
+* Songs can be added from nautilus
+* No database update are required (files are on-the-fly added to the database)
+* A python interpreter can be used to control Pimp 
+* Files are identified by a fingerprint which is stable over file
+  renaming, tag modification
+* Note and Comment can be added
+* Context loading and saving on init and quit
+* Audio part is based on gstreamer
+* Database part is based on sqlalchemy
+
 
 Dependencies
 ------------
@@ -77,14 +82,18 @@ Dependencies
 * sqlalchemy >= 0.6 : python sql ORM package
 * socketserver : python package to implement server
 * sox (to generate audiofingerprint)  
-       
-Features
---------
-* A Mpd client can be used to control Pimp (partially comptatible)
-* Audio part is based on gstreamer
-* Files are identified by a fingerprint
-* No database update are required (files are added to the database)
-* A python interpreter can be used to control Pimp 
+
+
+For developers
+--------------
+It is easy to register functions called on player actions. See
+player_event extension for examples.
+
+* Player_event extension logs a lot of events on file such as play,
+  stop, seek, etc in order to get playlists or statistics.
+
+
+
 
 Limits
 ------

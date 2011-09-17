@@ -1,8 +1,8 @@
 #!/bin/bash
 
-usage="Usage: "$0" <add|replace> <filename|dirname>"
+usage="Usage: "$0" <port> <add|replace> <filename|dirname>"
 
-if [ $# -ne 2 ]
+if [ $# -ne 3 ]
 then 
     echo $usage
     exit 1
@@ -11,20 +11,20 @@ max_file=500
 
 add()
 {
-    find "${1}" \
+    find "${2}" \
 	-iname "*.flac" -o -iname "*.mp3" -o -iname "*.ogg" \
 	| head -n $max_file | sort \
-	| mpc add
+	| mpc -p ${1} add
 }
 
 
-case "$1" in
+case "$2" in
     "add")
-	add $2
+	add $1 $3
 	;;
     "replace")
 	mpc clear
-	add $2
+	add $1 $3
 	;;
     *)
 	echo $usage

@@ -1,9 +1,9 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=Pimpc replace
+Name=Pimp Replace
 Comment=To replace current playlist in pimp via mpc
 Type=Application
-Exec=pimpc.sh replace 
+Exec=pimpc.sh 6600 replace 
 MimeType=audio/x-flac;audio/mpeg;application/ogg;inode/directory
 Icon=/usr/share/pixmaps/scite_48x48.png
 Terminal=false

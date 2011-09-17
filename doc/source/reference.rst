@@ -6,11 +6,5 @@ Module Documentation
 
    reference_core
    reference_extension
+   reference_handlers
 
-* :mod:`pimp.handlers.mpd`
-
-
-Mpd Handler
------------
-.. automodule:: pimp.handlers.mpd
-   :members:

@@ -3,10 +3,19 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+
+
+
 Pimp : Python Intelligent Music Player
 ======================================
 .. include:: readme.rst
 
+Screenshot
+==========
+.. figure:: screenshot.png
+   :scale: 50 %
+
+   Pimp interpreter with sonata and nautilus.
 
 More Information
 ================
@@ -15,7 +24,7 @@ More Information
 
    install
    reference
-
+   script_readme
 
 Indices and tables
 ==================

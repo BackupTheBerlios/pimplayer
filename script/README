@@ -1,13 +1,14 @@
-Some script to use pimp in a "userfriendly" way.  
+Script README
+==============
+* Install pimpc.sh to your user bin.
+* Configure gnome to be able to add songs from nautilus.
 
 pimpc.sh permits to add or replace song or songs directory in the
-playlist. Moreover, it's added by make in the nautilus application
-associations.
-
+playlist. 
 
 To install them::
 
-$ make 
+$ make install 
 
 To remove them::
 
