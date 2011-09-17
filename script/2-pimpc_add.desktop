@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Pimpc add
+Comment=To add songs to current playlist in pimp via mpc
+Type=Application
+Exec=pimpc.sh add 
+MimeType=audio/x-flac;audio/mpeg;application/ogg;inode/directory
+Icon=/usr/share/pixmaps/scite_48x48.png
+Terminal=false
+Categories=GNOME;Application;Development;
+StartupNotify=true

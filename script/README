@@ -1,0 +1,14 @@
+Some script to use pimp in a "userfriendly" way.  
+
+pimpc.sh permits to add or replace song or songs directory in the
+playlist. Moreover, it's added by make in the nautilus application
+associations.
+
+
+To install them::
+
+$ make 
+
+To remove them::
+
+$ make clean
