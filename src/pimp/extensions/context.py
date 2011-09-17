@@ -9,16 +9,20 @@ import os.path
 context_dir=os.path.expanduser("~/.pimp/contexts/")
 
 def saveContext(player,name):
-    f = open(context_dir+name, 'w')
-    pl=pimp.core.playlist.Playlist.__getstate__(player)
-    pickle.dump(pl,f)
-    f.close()
+        c = context_dir+name
+        f = open(c, 'w')
+        pl=pimp.core.playlist.Playlist.__getstate__(player)
+        pickle.dump(pl,f)
+        f.close()
 
 def loadContext(player,name):
-    f = open(context_dir+name, 'r')
-    d = pickle.load(f)
-    pimp.core.playlist.Playlist.__setstate__(player,d)
-    f.close
+    try :
+        c = context_dir+name
+        f = open(c, 'r')
+        d = pickle.load(f)
+        pimp.core.playlist.Playlist.__setstate__(player,d)
+        f.close
+    except IOError : raise Exception("Context %s doesn't exist" % c)
 
 
 

@@ -1,5 +1,19 @@
-- player with basic actions: play, stop, pause, seek.
-- playlist added next, prev actions.
-- all action are logged in a database.
-- file logged in the database can be identified later with an audio fingerprint
-- a mpd server backend to control the player
+- The player state (context extension) is saved and restored when it's
+  quitted and started.
+
+- A player context is a improved playlist (remember current played
+  song, consumed songs in random ...)
+
+- Database entries are on-the-fly added. Don't need database upgrade.
+
+- Files logged in the database are identified with an audio
+  fingerprint. Then, a file can be located at different locations.
+
+- Emulate Mpd server to be able to use mpd client (mpc, sonata ...).
+
+- Record player events (play, pause, seek ...) to generate stats,
+  playlists ...
+
+- Song can be noted, commented.
+
+- Song fingerprint is stable on file renaming, tag modification.

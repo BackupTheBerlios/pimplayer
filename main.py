@@ -35,7 +35,13 @@ if options.verbose: Log.toggle_stdout()
 # Start Pimp player
 # =================
 from pimp.core.pimp import player
-player.volume(0.2)
+import pimp.extensions.context
+try:
+    pimp.extensions.context.loadContext(player,"default")
+except Exception as e: print e
+else:
+    print "Loading default context ..."
+
 
 # Initialisation of extensions
 # ============================
@@ -67,8 +73,12 @@ print "Pimp is listenin mpd client on port %d " % mpd_port
 print "Pimp is using %s database with user %s " % (database,user)
 print ""
 
+import pimp.extensions.context
+
 def quit():
 	""" To leave Pimp """
+        print "Saving context ..."
+        pimp.extensions.context.saveContext(player,"default")
 	print "Quitting mpd ..."
 	mpd.quit()
 	print "Quitting player ..."

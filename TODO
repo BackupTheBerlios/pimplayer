@@ -1,16 +1,13 @@
-* In playlist.add, get duration from database
-* Move player.play to player.__play__
-* Test mp3 and ogg file.
-* Add all gstreamer supported file.
+* Enlarge path string ... URGENT
 * Ensure that '"' are treated in a goog manner. Currently, a file path cannot contain '"'. It doesn't work in mpd.py and file.py.
+
+* In playlist.add, get duration from database
+* Add all gstreamer supported file.
 * Improve (from scratch !) the file module.
 * Secure the PlayerPlaylist against concurrency: Add a critical section around all command methods.
 * Imrpove QUeue : should use "about-signal" : http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-plugins/html/gst-plugins-base-plugins-playbin2.html#GstPlayBin2--audio-sink
-* mpd handler : plchanges command send the whole playlist instead of a diff.
-* It is designed to be modular in order to be able to easily add some
-  user extensions.  It is also programmable thought a python
-  interpreter. Currently, the interpreter is attached to the server but
-  we aim to remote it (pyro ?).
+* Mpd handler : plchanges command send the whole playlist instead of a diff.
+* Detach interpreter from player process
 
 
 ROAD MAP
