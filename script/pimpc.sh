@@ -18,13 +18,13 @@ add()
 }
 
 
-case "$2" in
+case $2 in
     "add")
-	add $1 $3
+	add $1 "$3"
 	;;
     "replace")
 	mpc clear
-	add $1 $3
+	add $1 "$3"
 	;;
     *)
 	echo $usage
