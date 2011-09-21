@@ -27,6 +27,8 @@ from sqlalchemy.ext.declarative import declared_attr, declarative_base
 from datetime import datetime
 
 class Path(str):
+    """ A default Path class implementation. Use it to add a string
+    path to the database. """
     def getPath(self): return self
 
 class Db(object):
@@ -62,7 +64,7 @@ class File(Db.Base):
     albumApt = Column(String(32))
     vApt = Column(String(64))
     format = Column(String(16))
-    path = Column(String(256))
+    path = Column(String(1024))
     lastModDate = Column(DateTime)
     duration = Column(Integer)
 
