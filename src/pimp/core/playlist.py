@@ -82,15 +82,22 @@ class Playlist(VersionnedList,object):
 		""" Return current song. 'kwargs' is unsed. (t's just
 		here for homogenieity with setCurrent in getNext and
 		other method) """
-		return self.__getitem__(self.__current)
+		try :
+			return self.__getitem__(self.__current)
+		except IndexError:
+			return None
+
+	def isEmpty(self): return len(self)==0
 
         def information(self):
 		""" Return inforamtion about playlist ..."""
-		try :
-			current=[('currentPath', self.current().path),
+		if not self.isEmpty() and self.current() != None:
+			current=[('currentPath', self.current().getPath()),
 				 ('currentId' , self.current().id ),
 				 ('currentPos',self.__current)]
-		except : current = []
+		else:
+			logger.debug("Playlist is empty")
+			current = []
 		return Info([('length',len(self)),('version',self.version())]
 			    +current)
 

@@ -111,6 +111,12 @@ class File(Db.Base):
     def All():
         """ Return all file row """
         return Db.session.query(File).all()
+
+    @staticmethod
+    def Lasts(number=None):
+        """ Return 'number' lasts events or 100 lasts events if number is None """ 
+        return Db.session.query(File).order_by(desc(File.date)).limit(number or 100).all()
+
         
 
     def __init__(self,path,format,md5,duration,frontend):

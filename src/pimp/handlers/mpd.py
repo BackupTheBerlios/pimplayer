@@ -9,9 +9,11 @@ import threading
 
 from pimp.core.playlist import * 
 from pimp.core.player import * 
+import pimp.core.db
+
 
 logger=logging.getLogger("mpd")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
     """This class treats a request from a mpd client.
@@ -20,7 +22,17 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
         self.player=playerPlaylist
         HOST, PORT = "localhost", port
         SocketServer.TCPServer.__init__(self,(HOST, PORT),RequestHandlerClass)
-        
+
+    def commands(self,args):
+        acc=""
+        for i in self.Command.keys():
+            acc+="command: %s\n" % i
+        return acc
+
+    def outputs(self,args):
+        return ("outputid: 0\n" +
+                "outputname: mpd alsa device\n"+
+                "outputenabled: 1\n")
 
     def status (self,args):
         infos=self.player.information()
@@ -72,9 +84,32 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
                 "Id: %d\n"% idx)
     
     
+    def __toMpdFile(self,path,duration):
+        return ("file: %s\n" % path +
+                "Last-Modified: 2011-01-16T17:49:15Z\n" +
+                "Time: %s\n" % duration +
+                "Artist: No Doubt\n" +
+                "Title: Spiderwebs\n" +
+                "Album: Tragic Kingdom\n")
+    
 
-    def toMpdDir(self,path):
-        return "directory: "+path+"\n"
+    def lsinfo(self,args):
+#        try :
+            if args[0] == '/':
+                return "directory: lasts 50\n"
+            elif args[0] == 'lasts 50':
+                files=pimp.core.db.File.Lasts(50)
+                acc=""
+                for f in files:
+                    acc+=self.__toMpdFile(f.path,f.duration)
+                return acc
+            else:
+                return ""
+#        except KeyError as e:
+#            print e
+#            exit
+                
+
 
     def plchanges(self,args):return self.toMpdPlaylist(self.player[:])
 
@@ -93,7 +128,12 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
             self.player.play()
     def stop(self,args):self.player.stop()
     def currentsong(self,args):
-            return self.toMpdPlaylistItem(self.player.current().getPath(),self.player.current().id,self.player.getCurrentIdx(),self.player.current().duration)
+        if not self.player.isEmpty() and self.player.current() != None:
+            return self.toMpdPlaylistItem(self.player.current().getPath(),
+                                          self.player.current().id,
+                                          self.player.getCurrentIdx(),
+                                          self.player.current().duration)
+        else : return ""
 
     def next(self,args):self.player.next()
     def prev(self,args):self.player.prev()
@@ -113,18 +153,14 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
         self.player.move(ifrom,ito)
     
 
-   #Doesn't work
-    def ls_info(self,args):
-        path=args[0].replace('"','')
-        toMpd={'file':self.toMpdPlaylistItem ,
-                'dir':self.toMpdDir}
-        return ''.join([toMpd[t](f) for (f,t) in Library().lstype(path) if t!=None])
 
     Command={
+        "outputs": outputs,
+#        "commands" : commands,
         "status" : status,
         "playlistinfo" : playlist_info,
         "plchanges" : plchanges,
-        #        "lsinfo" : ls_info,
+        "lsinfo" : lsinfo,
         "add" : add,
         "play" : play,
         "stop":stop,
@@ -194,9 +230,9 @@ class MpdRequestHandler(SocketServer.StreamRequestHandler):
         except KeyError:
             logger.warning("Command '%s' is not supported!" % cmd)
             msg=""
-        except IndexError:
-            logger.debug("Playlist may be empty when command %s occured" % cmd)
-            msg=""
+        # except IndexError:
+        #     logger.debug("Playlist may be empty when command %s occured" % cmd)
+        #     msg=""
         except:
             logger.critical("Unexpected error on command %s: %s" % (c,sys.exc_info()[0]))
             raise
