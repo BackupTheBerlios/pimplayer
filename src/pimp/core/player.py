@@ -39,9 +39,9 @@ class Player(object):
 		""" Player status is set to stop """
 		self.player = gst.element_factory_make("playbin2", "player")
 		fakesink = gst.element_factory_make("fakesink", "fakesink")
-		alsasink = gst.element_factory_make("alsasink", "alsasink")
+		self._alsasink = gst.element_factory_make("alsasink", "alsasink")
 		self.player.set_property("video-sink", fakesink)
-		self.player.set_property("audio-sink", alsasink)
+		self.player.set_property("audio-sink", self._alsasink)
 		self.bus = self.player.get_bus()
 		self.bus.add_signal_watch()
 		self.bus_handler_id=self.bus.connect("message", self._on_message)
