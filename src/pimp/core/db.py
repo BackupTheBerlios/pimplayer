@@ -68,6 +68,8 @@ class File(Db.Base):
     lastModDate = Column(DateTime)
     duration = Column(Integer)
 
+    def getPath(self):
+        return self.path
 
     @staticmethod
     def Get(path,frontend="pimp"):
@@ -186,6 +188,7 @@ class FileEvent(Event):
     """ A fileEvent is an event on a file.  
     All method attributes 'path' must implement getPath method.
     """
+    zicApt = Column(String(32))
     # For sqlalchemy
     @declared_attr
     def fileId(cls):
@@ -194,6 +197,7 @@ class FileEvent(Event):
     @declared_attr
     def file(cls):
         return relationship(File,primaryjoin="%s.fileId == File.id" % cls.__name__)
+    
 
     @classmethod
     def FindByPath(cls,path):
@@ -206,6 +210,7 @@ class FileEvent(Event):
         if self.file == None :
             raise FileError(path)
         self.fileId = self.file.id
+        self.zicApt = self.file.zicApt
 
     def __repr__(self):
         return "%s , fileid:%s , file:%s" % (Event.__repr__(self),self.fileId, self.file.path)
