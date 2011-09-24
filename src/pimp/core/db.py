@@ -201,8 +201,15 @@ class FileEvent(Event):
 
     @classmethod
     def FindByPath(cls,path):
-        """ Find all cls events for a given path """
+        """ Find all cls events for the path """
         return Db.session.query(cls).join(File). filter(File.path==path.getPath()).all() 
+
+    @classmethod
+    def FindBySong(cls,path):
+        """ Find all cls events for the zicApt associated to the
+        path. Even if a file has been moved, it returns all records."""
+        return Db.session.query(cls).join((File, cls.zicApt==File.zicApt)).filter(File.path==path.getPath()).all() 
+
 
     def __init__(self,path,**kwds):
         Event.__init__(self,**kwds)

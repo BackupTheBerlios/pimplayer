@@ -30,7 +30,7 @@ class Note(db.Db.Base,db.FileEvent):
     @staticmethod
     def GetNote(path):
         try:
-            ns=Note.FindByPath(path)
+            ns=Note.FindBySong(path)
             return sum([a.xnote for a in ns]) / len(ns)
         except ZeroDivisionError: return None
         
@@ -47,3 +47,5 @@ class Comment(db.Db.Base,db.FileEvent):
     def __repr__(self):
         return db.FileEvent.__repr__(self) + " " + self.text
 
+    @staticmethod
+    def GetComments(path): return [c.text for c in Comment.FindBySong(path)]
