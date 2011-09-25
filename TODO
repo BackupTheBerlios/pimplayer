@@ -1,4 +1,3 @@
-* Enlarge path string ... URGENT
 * Ensure that '"' are treated in a goog manner. Currently, a file path cannot contain '"'. It doesn't work in mpd.py and file.py.
 
 * In playlist.add, get duration from database

@@ -28,15 +28,14 @@ Run it
 * See dependencies section
 * Create a mysql user 'pimp'
 * Create a mysql database 'pimp_db' (tables are created by pimp if not exist)
-* Run with an interpreter :: 
+* Run with an ipython interpreter :: 
   			
-     $ python -i pimpreter.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
+     $ ./pimp.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
      
  or for a deamon ::
 
      $ python main.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
      
-
 Use it
 ------
 * With mpc::
@@ -91,7 +90,6 @@ player_event extension for examples.
 
 * Player_event extension logs a lot of events on file such as play,
   stop, seek, etc in order to get playlists or statistics.
-
 
 
 
