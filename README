@@ -1,7 +1,6 @@
 About
 -----
-
-Pimp is a music player with a client server model. The player can be
+Pimp is a highly interactive and programmable music player. The player can be
 controlled with a mpd client or via an pyton interpreter. Files system
 can be directly played and file paths are recorded in a database. Files are
 identified by a 'fingerprint' which permits to identify an audio file over
@@ -26,15 +25,14 @@ or you can `browse source code <http://git.berlios.de/cgi-bin/gitweb.cgi?p=pimpl
 Run it
 ------
 * See dependencies section
-* Create a mysql user 'pimp'
-* Create a mysql database 'pimp_db' (tables are created by pimp if not exist)
+* Create a mysql database 'pimp_db' for the user pimp
 * Run with an ipython interpreter :: 
   			
-     $ ./pimp.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
+     $ ./pimp.py -p 6600 -d pimp_db -u pimp --db-passwd=pimp
      
  or for a deamon ::
 
-     $ python main.py -p 9999 -d pimp_db -u pimp --db-passwd=pimp
+     $ python main.py -p 6600 -d pimp_db -u pimp --db-passwd=pimp
      
 Use it
 ------
@@ -54,10 +52,10 @@ Use it
 
 * Note and Comment in pimpreter::
 
-  >>> Note.Add(player.current(),4)
+  >>> Note.Add(player.current(),4) # Add a note on current played song
   >>> Note.GetNote(player.current()) # Compute notes average
-  >>> Comment.Add(player[3],"comments")
-  >>> Note.Add(Url("/a/file"),4)
+  >>> Comment.Add(player[3],"comments") # Add a comment on current played song
+  >>> Note.Add(db.Path("/a/file"),4) # Add a note on a filepath
   >>> player.sort(key=Note.GetNote,reverse=True) # Sort playlist by note
 
 
@@ -73,6 +71,7 @@ Features
 * Context loading and saving on init and quit
 * Audio part is based on gstreamer
 * Database part is based on sqlalchemy
+* Pimp is under GPL license
 
 
 Dependencies
@@ -99,3 +98,5 @@ Limits
   But it's not so hard to add them: add them in File module
 * Mpd library isn't currently supported.
 * Many others ...
+
+
