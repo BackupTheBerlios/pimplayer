@@ -86,10 +86,14 @@ def quit():
 	print "Quitting Pimp. Bye" 
 	exit()
 
+import atexit
+atexit.register(quit)
+del(atexit)
+
+
 if __name__ == "__main__":
 	while mpd.thread.isAlive():
 		try:
                     mpd.thread.join(2)
-		except KeyboardInterrupt:
-			quit()
+		except KeyboardInterrupt:break;
 

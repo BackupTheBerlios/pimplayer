@@ -59,8 +59,6 @@ def infoRepr(i):
     return acc
 Info.__repr__=infoRepr
 
-atexit.register(main.quit)
-
 
 # anything not deleted (sys and os) will remain in the interpreter session
 del atexit, readline, rlcompleter, save_history, historyPath, os, sys
