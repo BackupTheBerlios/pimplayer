@@ -1,13 +1,17 @@
 About
 -----
-Pimp is a highly interactive and programmable music player. The player can be
-controlled with a mpd client or via an pyton interpreter. Files system
-can be directly played and file paths are recorded in a database. Files are
-identified by a 'fingerprint' which permits to identify an audio file over
-file moving and tag modification.
+
+Pimp is a highly interactive and programmable music player. The player
+can be controlled with a Mpd client and/or IPpyton. Audio files can be
+played from file system and file paths are recorded in a
+database. Files are identified by a 'fingerprint' which permits to
+identify an audio file over file moving and tag modification.
 
 Pimp aims to be a player framework with a really small core. All
-features are implemented in extensions.
+features are implemented in extensions.  For instance, player events
+such as play, stop, seek, pause are logged to the database with
+extension :mod:`pimp.extensions.player_event`.
+
 
 To submit patches, bugs ... go to `project homepage
 <https://developer.berlios.de/projects/pimplayer/>`_ .
@@ -24,21 +28,26 @@ or you can `browse source code <http://git.berlios.de/cgi-bin/gitweb.cgi?p=pimpl
 
 Run it
 ------
-* See dependencies section
+* See dependencies section (sox, pygst, sqlalchemy)
 * Create a mysql database 'pimp_db' for the user pimp
 * Run with an ipython interpreter :: 
   			
-     $ ./pimp.py -p 6600 -d pimp_db -u pimp --db-passwd=pimp
-     
- or for a deamon ::
+     $ ./pimp.py -v -i --disable-db
 
-     $ python main.py -p 6600 -d pimp_db -u pimp --db-passwd=pimp
+* Or just a mpd deamon ::
+
+     $ ./pimp.py -v --disable-db -p 6600
+
+* Or run with an ipython interpreter, mpd handler, context and events logging :: 
+  			
+     $ ./pimp.py -v -i -c -d impdb_dev -u pimp_dev --db-passwd=pimp_dev -p 6600
+
      
 Use it
 ------
 * With mpc::
   
-     $ mpc -p 9999 add /a/song  # Use absolute path
+     $ mpc -p 9999 add /a/song  # Use absolute audio file path
      $ mpc -p 9999 play
      
 * With pimpreter::
@@ -47,6 +56,10 @@ Use it
   >>> player.play()
 
   You can use tabulation on player object which is documented in :doc:`reference`
+
+* To add a directory from shell ::
+  
+  $ ./script/pimpc.sh add /mnt/music/album/
 
 * With nautilus, songs or directory can be added to pimp playlist. See :doc:`script_readme`.
 
@@ -61,16 +74,17 @@ Use it
 
 Features
 --------
-* A Mpd client can be used to control Pimp (partially comptatible)
+* A Mpd client can be used to control Pimp :mod:`pimp.handlers.mpd`
 * Songs can be added from nautilus
 * No database update are required (files are on-the-fly added to the database)
 * A python interpreter can be used to control Pimp 
 * Files are identified by a fingerprint which is stable over file
   renaming, tag modification
-* Note and Comment can be added
-* Context loading and saving on init and quit
-* Audio part is based on gstreamer
-* Database part is based on sqlalchemy
+* Note and Comment can be added :mod:`pimp.extensions.tag`
+* A lot of player event are logged to generate stats and playlist :mod:`pimp.extensions.player_event`
+* Context loading and saving on init and quit :mod:`pimp.extensions.context`
+* Audio part is based on gstreamer :mod:`pimp.core.player`
+* Database part is based on sqlalchemy :mod:`pimp.core.db`
 * Pimp is under GPL license
 
 

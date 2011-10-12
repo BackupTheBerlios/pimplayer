@@ -6,7 +6,7 @@
 
 
 
-Pimp : Python Intelligent Music Player
+Pimp : Python Interactive Music Player
 ======================================
 .. include:: readme.rst
 

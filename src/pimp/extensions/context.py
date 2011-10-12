@@ -5,6 +5,7 @@ It's then possible to store and restore the pimp state.
 import pickle
 import pimp.core.playlist
 import os.path
+import atexit
 
 context_dir=os.path.expanduser("~/.pimp/contexts/")
 """ Directory where context files are written """
@@ -28,4 +29,8 @@ def loadContext(player,name):
 	except IOError : raise Exception("Context %s doesn't exist" % c)
 	
 
+
+#def enable(player,name):
+#	loadContext(player,name)
+#	atexit.register(lambda : saveContext(player,name))
 

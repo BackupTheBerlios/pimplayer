@@ -18,7 +18,7 @@ class Log:
     _handlerFile.setFormatter(_formatterFile)
 
     _formatterStdout = logging.Formatter(
-        '%(levelname)-8s: %(message)s')
+        '%(levelname)s: %(message)s')
     _handlerStdout=logging.StreamHandler()
     _handlerStdout.setLevel(logging.INFO)
     _handlerStdout.setFormatter(_formatterStdout)
@@ -27,14 +27,30 @@ class Log:
     if _stdoutLogEnable: 
         logger.addHandler(_handlerStdout)
     logger.addHandler(_handlerFile)
+
+    @staticmethod
+    def stdout_level(level=None):
+        """To see or not log messages in the console"""
+        if level is None:
+            if Log._stdoutLogEnable:
+                logging.getLogger().removeHandler(Log._handlerStdout)
+                Log._stdoutLogEnable=False
+
+        else:
+            Log._handlerStdout.setLevel(level)
+            if not Log._stdoutLogEnable:
+                logging.getLogger().addHandler(Log._handlerStdout)
+                Log._stdoutLogEnable=True
+
     
     @staticmethod
-    def toggle_stdout():
+    def toggle_stdout(level=logging.INFO):
         """To see or not log messages in the console"""
         if Log._stdoutLogEnable:
             logging.getLogger().removeHandler(Log._handlerStdout)
             Log._stdoutLogEnable=False
         else:
+            Log._handlerStdout.setLevel(level)
             logging.getLogger().addHandler(Log._handlerStdout)
             Log._stdoutLogEnable=True
 
@@ -142,7 +158,6 @@ class Hook(type):
     __methods_hooked__=[]
     """ Used to enable 'hooked' method by metaclass """
     def __new__(metacls, name, bases, dct):
-        print name , bases
         def _wrapper(name, method):
             # Redefining a function
             @Guard.locked
@@ -175,10 +190,9 @@ class Hook(type):
     @staticmethod
     def AddHandler(method,callback):
         """ Attach a handler to a class method """
-        print ("Handler %s on method %s" % (callback.__name__,method.__name__))
+#        print ("Handler %s on method %s" % (callback.__name__,method.__name__))
         method.__handlers__.append(callback)
 
-        
     @staticmethod
     def HookMethod(method):
         """ Used as a Decorator to handle a class method """

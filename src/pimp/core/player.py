@@ -9,6 +9,9 @@ import gst
 from common  import Info,logging,datetime #,Guard
 
 #from playlist import * 
+import common
+logger=common.logging.getLogger("player")
+logger.setLevel(common.logging.DEBUG)
 
 class Player(object):
 	"""Player is a simple audio player based on pygst. It's just
@@ -32,6 +35,8 @@ class Player(object):
 
 	__setstate__(state) and __getstate__() methods permit to save
 	and load a player state.
+
+	To change alsa output device, player._alsasink.set_property("device","hw:1,0").
 
 	TODO: The player should have a queue song to manage crossfading.
 	"""
@@ -208,7 +213,7 @@ class Player(object):
 			logging.debug("Play %s" % filepath)
 			return True
 		else: 
-			logging.debug("File '%s' can not be played" % filepath)
+			logging.warning("File '%s' can not be played" % filepath)
 			return False
 		
 	def stop(self):

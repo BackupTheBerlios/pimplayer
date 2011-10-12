@@ -3,19 +3,20 @@ file.
 
 Because they inherits :class:`FileEvent`, you can use methods from it.
 
+
+Some examples::
+
+    >>> Note.Add(player.current(),4)
+    >>> player.sort(key=Note.GetNote,reverse=True)
+    >>> Comment.Add(player.current(),"cool")
+    >>> Comment.FindBySong(player.current())
+
 """
 import pimp.core.db as db
 from pimp.core.pimp import player
 
 class Note(db.Db.Base,db.FileEvent):
-    """ To log a note on a file.
-
-    Some examples::
-
-    >>> Note.Add(player.current(),4)
-    >>> player.sort(key=Note.GetNote,reverse=True)
-    
-    """
+    """ To log a note on a file."""
     __tablename__ = 'note'
 
     xnote = db.Column(db.Integer)
@@ -29,6 +30,8 @@ class Note(db.Db.Base,db.FileEvent):
 
     @staticmethod
     def GetNote(path):
+        """ Compute the notes average of audio fingerprint associated
+        to this path """
         try:
             ns=Note.FindBySong(path)
             return sum([a.xnote for a in ns]) / len(ns)
@@ -48,4 +51,6 @@ class Comment(db.Db.Base,db.FileEvent):
         return db.FileEvent.__repr__(self) + " " + self.text
 
     @staticmethod
-    def GetComments(path): return [c.text for c in Comment.FindBySong(path)]
+    def GetComments(path): 
+        """ Return comments (use FindBySong) """ 
+        return [c.text for c in Comment.FindBySong(path)]

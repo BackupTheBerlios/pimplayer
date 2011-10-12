@@ -1,6 +1,6 @@
 """ To get information about system files """
 #import subprocess #commands
-import commands
+#import commands
 from os.path import isfile,getmtime
 import time
 import datetime
@@ -12,7 +12,6 @@ import logging
 
 def get_status_output(cmd, input=None, cwd=None, env=None):
     pipe = Popen(cmd, shell=True, cwd=cwd, env=env, stdout=PIPE, stderr=STDOUT)
-
     (output, errout) = pipe.communicate(input=input)
     assert not errout
 
@@ -24,12 +23,9 @@ def get_status_output(cmd, input=None, cwd=None, env=None):
 def type(path):
     """ Just 3 formats are supported : mp3 , flac , ogg
     TODO : Really shity ... """
-
     if not isfile(path) : 
         logging.info("'%s' is not a file" % path)
         return None
-#    t = subprocess.check_output('gst-typefind-0.10 "%s"' % path)
-#    t = commands.getstatusoutput('gst-typefind-0.10 "%s"' % path)
     t = get_status_output('gst-typefind-0.10 "%s"' % path)
     mimetype = t[1]
     if mimetype.find(" - FAILED:") != -1:
@@ -53,7 +49,7 @@ def type(path):
 def supported(path):
     """ To know if a file is supported by Pimp """
     return type(path) != None
-        
+       
 
 
 from subprocess import *
@@ -89,18 +85,5 @@ def duration(path):
     dur=p.information()['duration']
     p.quit()
     return dur
-
-
-
-import test    
-if False : 
-    test = ["~/tmp.a","/home/eiche/tmp.a","/home/eiche/20 - pourquoi_drunk.ogg","/home/eiche/destroyer.flac","/home/eiche/impd.log"]
-
-    for t in test :
-        print "\n--------------------------------------------------------------------------------"
-        print "path : %s "%t
-        print "(format,md5): " , format_md5(t)
-        print "modification_date: " , modification_date(t)
-        print "duration: " , duration(t)
     
 

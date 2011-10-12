@@ -26,6 +26,9 @@ from sqlalchemy.ext.declarative import declared_attr, declarative_base
 
 from datetime import datetime
 
+logger=common.logging.getLogger("database")
+logger.setLevel(common.logging.DEBUG)
+
 class Path(str):
     """ A default Path class implementation. Use it to add a string
     path to the database. """
@@ -42,6 +45,8 @@ class Db(object):
         Db.engine=create_engine("mysql://%s:%s@localhost/%s" % (user,pwd,dbName), use_ansiquotes=True)
         Db.session = sessionmaker(bind=Db.engine)()
         Db.Base.metadata.create_all(Db.engine)
+        logger.info("Pimp is using '%s' database with user '%s' and password '%s'" % (dbName,user,pwd))
+
 
 # Use to manage file error ... shity -> TODO.
 class FileError(Exception):

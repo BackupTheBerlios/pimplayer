@@ -13,14 +13,14 @@ class Song(object):
 	Offset=0
         
 	def __init__(self,filepath):
-            if not supported(filepath):
-                raise FileNotSupported(filepath)
-            self.__filepath=filepath
-            self.id=Song.Offset
-            self.duration=duration(filepath)
-            Song.Offset=Song.Offset+1
-            self._dbfile=None
-            self.update()
+		if not supported(filepath):
+			raise FileNotSupported(filepath)
+		self.__filepath=filepath
+		self.id=Song.Offset
+		self.duration=duration(filepath)
+		Song.Offset=Song.Offset+1
+		self._dbfile=None
+		self.update()
 
 
 	def __repr__(self):

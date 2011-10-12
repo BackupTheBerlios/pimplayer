@@ -1,6 +1,9 @@
-""" A partial mpd handler. It permits to use mpd client to control
-Pimp. Currently, a subset of playback commands are supported."""
+""" This is a partial mpd handler. It permits to use mpd client to control
+Pimp. Currently, a subset of playback commands are supported.
 
+To launch a mpd server, use :class:`Mpd`.
+Supported mpd commands are defined in :class:`MpdHandler`.
+"""
 import SocketServer
 SocketServer.TCPServer.allow_reuse_address = True
 import time
@@ -16,7 +19,7 @@ logger=logging.getLogger("mpd")
 logger.setLevel(logging.DEBUG)
 
 class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
-    """This class treats a request from a mpd client.
+    """Treat a request from a mpd client.
     Just a subset of mpd commands are supported. See Commands variable"""
     def __init__(self,RequestHandlerClass,playerPlaylist,port=6600):
         self.player=playerPlaylist
@@ -91,7 +94,6 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
                 "Artist: No Doubt\n" +
                 "Title: Spiderwebs\n" +
                 "Album: Tragic Kingdom\n")
-    
 
     def lsinfo(self,args):
 #        try :
@@ -115,7 +117,8 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
 
     def playlist_info(self,args):return self.toMpdPlaylist(self.player[:])
 
-    def add(self,args): self.player.appendByPath(args[0])
+    def add(self,args): 
+        self.player.appendByPath(args[0])
 
     def play(self,args):
         if args:
@@ -179,15 +182,18 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
         "move":move,
         "moveid":moveid
         }
+    """ The list of supported mpd commands """
+
 
 class MpdRequestHandler(SocketServer.StreamRequestHandler):
-    """ This class manages the connection with a mpd client """
+    """ Manage the connection with a mpd client """
     def __init__(self, request, client_address, server):
         logger.debug( "Client connected (%s)" % threading.currentThread().getName())
         SocketServer.StreamRequestHandler.__init__(self,request,client_address,server)
 
     def handle(self):
-        # self.request is the TCP socket connected to the client
+        """ Handle connection with mpd client. It gets client command,
+        execute it and send a respond."""
         welcome="OK MPD 0.16.0\n"
         self.request.send(welcome)
         while True:
@@ -207,7 +213,7 @@ class MpdRequestHandler(SocketServer.StreamRequestHandler):
                     else:
                         cmds.append(self.data)
                         if not cmdlist:break
-                logger.debug("Commands received from %s: " % self.client_address[0])
+                logger.debug("Commands received from %s" % self.client_address[0])
                 for c in cmds:
                     logger.debug("Command '" + c + "'...")
                     msg=msg+self.cmdExec(c)
@@ -220,11 +226,13 @@ class MpdRequestHandler(SocketServer.StreamRequestHandler):
                 break
 
     def cmdExec(self,c):
+        """ Execute mpd client command. Take a string, parse it and
+        execute the corresponding server.Command function."""
         try:
             pcmd=[m.group() for m in re.compile('(\w+)|("([^"])+")').finditer(c)] # WARNING An argument cannot contains a '"'
             cmd=pcmd[0]
             args=[a[1:len(a)-1] for a in pcmd[1:]]
-            logger.debug("Command received : %s %s" % (cmd,args))
+            logger.debug("Command executed : %s %s" % (cmd,args))
             msg=self.server.Command[cmd](self.server,args)
             if msg==None : msg=""
         except KeyError:
@@ -248,9 +256,9 @@ class MpdRequestHandler(SocketServer.StreamRequestHandler):
 
 
 
-# Create the mpd handle server, binding to localhost on port 'port'.
-# If port is not specified, the default MpdHandler port is used (6600).
 class Mpd(object):
+    """ Create the mpd handle server, binding to localhost on port 'port'.
+    If port is not specified, the default MpdHandler port is used (6600)."""
     def __init__(self,player,port=None):
         logger.info("Mpd handler is listening on port %d"%port)
         if port:
@@ -261,6 +269,10 @@ class Mpd(object):
         Mpd.thread = threading.Thread(target=Mpd.server.serve_forever)
         Mpd.thread.setDaemon(True)
         Mpd.thread.start()
+        logger.debug(("mpd",Mpd.thread))
+        
+
 
     def quit(self):
+        """ Stop mpd server """
         Mpd.server.shutdown()
