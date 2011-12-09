@@ -67,3 +67,4 @@ class Ipimp (threading.Thread):
           logger.info("Ipimp is launched")
           self.ipshell()
           logger.info("Quit Ipimp")
+          print "IPython exited ... (type Ctrl-C to exit Pimp)"

@@ -1,10 +1,8 @@
-from common import *
-from file import duration,supported
-#from db import File
+import common
 import os.path
 
-logger=logging.getLogger("playlist")
-logger.setLevel(logging.INFO)
+logger=common.logging.getLogger("playlist")
+logger.setLevel(common.logging.INFO)
 	
 class VersionnedList(list):
 	""" A VersionnedList is a list where all mutation methods
@@ -76,7 +74,7 @@ class Playlist(VersionnedList,object):
 		try :
 			self.append(self.cls_song(path))
 			logger.info("Song Added %s" % path)
-		except FileNotSupported:pass
+		except FileNotSupported:raise
 
 	def current(self,**kwargs):
 		""" Return current song. 'kwargs' is unsed. (t's just
@@ -153,24 +151,25 @@ class Playlist(VersionnedList,object):
 	# context can be use to print a part of the playlist arround the current song.
 	def show(self,context=None):
 		i=0
+		ret=""
 		if len(self) == 0:
-			print "Playlist is empty"
-			return None
-		print " Pos | Path"
+			ret+= "Playlist is empty"
+			return ret
+		ret+= " Pos | Path\n"
 		if context:
 			for i in range(-context,0):
-				print "%s%4s | %s" % (" ",(self.__current+i) % len(self),os.path.split(self.__getStep(i).getPath())[1])
+				ret += "%s%4s | %s\n" % (" ",(self.__current+i) % len(self),os.path.split(self.__getStep(i).getPath())[1])
 			print "%s%4s | %s" % (">",self.__current,os.path.split(self.__getStep(0).getPath())[1])
 			for i in range(1,context+1):
-				print "%s%4s | %s" % (" ",(self.__current+i) % len(self),os.path.split(self.__getStep(i).getPath())[1])
+				ret += "%s%4s | %s\n" % (" ",(self.__current+i) % len(self),os.path.split(self.__getStep(i).getPath())[1])
 		else:
 			for e in self:
 				if e == self.current():
 					cur=">"
 				else: cur=" "
-				print "%s%4s | %s" % (cur,i,os.path.split(e.getPath())[1])
+				ret += "%s%4s | %s\n" % (cur,i,os.path.split(e.getPath())[1])
 				i+=1
 
-
+		return ret
 	
 

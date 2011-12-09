@@ -2,6 +2,8 @@
 events. This module is a paranoid logger in order to log file moving,
 tag modification, file renaming in a transparency manner.
 
+WARNING: To use it, you must initialize Db class !
+
 The main table of the db is the table file. A file element is the path
 of an audio file and some informations such as type, modification
 date, duration and audio fingerprint. The File class permits to ask
@@ -156,7 +158,7 @@ class Event(object):
 
     @classmethod
     def Add(cls,*params,**kwds):
-        """Create an event object and add it to the db. If an error
+        """Create an cls object and add it to the db. If an error
         occurs, it return None"""
         try: a=cls(*params,**kwds)
         except FileError as e: 
@@ -201,13 +203,13 @@ class FileEvent(Event):
     # For sqlalchemy
     @declared_attr
     def file(cls):
-        return relationship(File,primaryjoin="%s.fileId == File.id" % cls.__name__)
+        return relationship(File,primaryjoin="%s.fileId == File.id" % cls.__name__,order_by=desc(File.date))
     
 
     @classmethod
     def FindByPath(cls,path):
         """ Find all cls events for the path """
-        return Db.session.query(cls).join(File). filter(File.path==path.getPath()).all() 
+        return Db.session.query(cls).join(File).filter(File.path==path.getPath()).all() 
 
     @classmethod
     def FindBySong(cls,path):

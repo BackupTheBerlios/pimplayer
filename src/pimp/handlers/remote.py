@@ -1,24 +1,17 @@
-import Pyro.core
-
-class JokeGen(Pyro.core.ObjBase):
-        def __init__(self):pass
-                Pyro.core.ObjBase.__init__(self)
-        def joke(self, name):
-                return "Sorry "+name+", I don't know any jokes."
+# saved as greeting.py
+import Pyro4
+import pimp.extensions.tag
 
 
 class Remote(object):
-    def __init__(self,player1,player2):
-        Pyro.core.initServer()
-        daemon=Pyro.core.Daemon()
-        uri=daemon.connect(player,"player")
-        
-        print "The daemon runs on port:",daemon.port
-        print "The object's uri is:",uri
-        
-        daemon.requestLoop()
-        
+	def __init__(self,player):
+            print "Running Pyro4 remote object access ..."
+            Pyro4.config.HMAC_KEY="pimp"
+            daemon = Pyro4.Daemon(port=9998)
+            uri_player = daemon.register(player,"player")
+            uri_Note = daemon.register(pimp.extensions.tag.Note,"Note")
+            uri_Comment = daemon.register(pimp.extensions.tag.Comment,"Comment")
+            print "[Pyro4] Object player at uri =", uri_player , uri_Note , uri_Comment      # print the uri so we can use it in the client l		daemon.requestLoop()
+            daemon.requestLoop()                  # start the event loop of the server to wait for calls
 
 
-if __name__=="__main__":
-    Remote(JokeGen())

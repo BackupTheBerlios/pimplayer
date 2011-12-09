@@ -36,7 +36,13 @@ class Note(db.Db.Base,db.FileEvent):
             ns=Note.FindBySong(path)
             return sum([a.xnote for a in ns]) / len(ns)
         except ZeroDivisionError: return None
-        
+
+    @staticmethod
+    def GreatherOrEqualThan(note):
+        """ Get a """
+        return db.Db.session.query(Note.zicApt,Note.xnote).filter("xnote>=%d" % note).distinct().all()
+#select file.path,avg(xnote)  from (select * from file order by date desc) as file,note where file.zicApt=note.zicApt group by note.zicApt
+
 class Comment(db.Db.Base,db.FileEvent):
     """ To log a comment on a file"""
     __tablename__ = 'comment'

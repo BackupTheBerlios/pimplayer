@@ -34,6 +34,11 @@ parser.add_option("-i","--interactive",
                   action="store_true",dest="interactive",default=False,
                   help="Interactive session via ipython [default: %default]")
 
+parser.add_option("-r","--remote", 
+                  action="store_true",dest="remote",default=False,
+                  help="Run remote object with Pyro. Use pimpc.py to contact it [default: %default]")
+
+
 parser.add_option("-c","--enable_context", 
                   action="store_true",dest="enable_context",default=False,
                   help="Enable context extension [default: %default]")
@@ -128,6 +133,10 @@ if options.interactive :
     import pimp.handlers.ipimp
     ipimp=pimp.handlers.ipimp.Ipimp()
     ipimp.start()
+
+if options.remote :
+    import pimp.handlers.remote
+    ipimp=pimp.handlers.remote.Remote(player)
 
 import threading
 import time
