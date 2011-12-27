@@ -60,9 +60,6 @@ parser.add_option("--verbosity",
     
 
 
-import sys,os
-sys.path.insert(0,os.path.abspath("./src/"))
-
 # For verbose mode
 # ================
 from pimp.core.common import Log

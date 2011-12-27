@@ -54,7 +54,8 @@ def cmd_player(args):
 def cmd_note(args):
     import pimp.core.db
     Note=Pyro4.Proxy("PYRO:Note@localhost:9998")          # get a Pyro proxy to the greeting object
-    if args.files != None:
+    print args.files==None
+    if args.files != None and args.files != []:
         pathfiles=map(pimp.core.db.Path,args.files)
         if args.add != None:
             print map(lambda f : Note.Add(f,args.add),pathfiles)
@@ -62,9 +63,13 @@ def cmd_note(args):
             notes=map(Note.GetNote,pathfiles)
             for (n,p) in zip(notes,pathfiles):
                 print str(n) + " " + p
-    if args.search != None:
+    elif args.search != None:
         for i in Note.GreatherOrEqualThan(args.search):
             print i.xnote , i.file.path
+    else:
+        print "iop"
+        raise argparse.ArgumentTypeError("Note needs options")
+
 
 
 def cmd_comment(args):
