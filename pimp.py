@@ -37,7 +37,8 @@ parser.add_option("-i","--interactive",
 parser.add_option("-r","--remote", 
                   action="store_true",dest="remote",default=False,
                   help="Run remote object with Pyro. Use pimpc.py to contact it [default: %default]")
-
+parser.add_option("--remote-port", dest="remote_port", type=int,default=9998,
+                  help="remote object handler port")
 
 parser.add_option("-c","--enable_context", 
                   action="store_true",dest="enable_context",default=False,
@@ -136,7 +137,7 @@ if options.interactive :
 
 if options.remote :
     import pimp.handlers.remote
-    ipimp=pimp.handlers.remote.Remote(player)
+    ipimp=pimp.handlers.remote.Remote(player,options.remote_port)
 
 import threading
 import time
