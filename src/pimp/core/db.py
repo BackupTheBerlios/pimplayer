@@ -190,6 +190,11 @@ class Event(object):
     @classmethod
     def All(cls):
         return Db.session.query(cls).all()
+
+#class One():
+#    def __init__(self,l):
+        
+
     
 class FileEvent(Event):
     """ A fileEvent is an event on a file.  
@@ -203,7 +208,11 @@ class FileEvent(Event):
     # For sqlalchemy
     @declared_attr
     def file(cls):
-        return relationship(File,primaryjoin="%s.fileId == File.id" % cls.__name__,order_by=desc(File.date))
+#        return relationship(File,primaryjoin="%s.fileId == File.id" % cls.__name__,order_by=desc(File.date))
+        return relationship(File,primaryjoin="%s.zicApt == File.zicApt" % cls.__name__,
+                            order_by=desc(File.date),
+                            foreign_keys=File.zicApt,
+                            uselist=False,lazy='immediate')
     
 
     @classmethod

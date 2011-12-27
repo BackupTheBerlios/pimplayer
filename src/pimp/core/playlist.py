@@ -96,7 +96,7 @@ class Playlist(VersionnedList,object):
 		else:
 			logger.debug("Playlist is empty")
 			current = []
-		return Info([('length',len(self)),('version',self.version())]
+		return common.Info([('length',len(self)),('version',self.version())]
 			    +current)
 
 	def __getStep(self,step,setCurrent=False):

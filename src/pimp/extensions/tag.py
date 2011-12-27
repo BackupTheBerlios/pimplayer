@@ -40,7 +40,8 @@ class Note(db.Db.Base,db.FileEvent):
     @staticmethod
     def GreatherOrEqualThan(note):
         """ Get a """
-        return db.Db.session.query(Note.zicApt,Note.xnote).filter("xnote>=%d" % note).distinct().all()
+#        return db.Db.session.query(Note.zicApt,Note.xnote).filter("xnote>=%d" % note).distinct().all()
+        return db.Db.session.query(Note).filter("xnote>=%d" % note).group_by(Note.zicApt).all()
 #select file.path,avg(xnote)  from (select * from file order by date desc) as file,note where file.zicApt=note.zicApt group by note.zicApt
 
 class Comment(db.Db.Base,db.FileEvent):

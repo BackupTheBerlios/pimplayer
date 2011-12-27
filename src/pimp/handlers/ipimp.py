@@ -56,15 +56,40 @@ del(readline)
 import pimp.core.player
 
 import threading
-from IPython.Shell import IPShellEmbed
+#from IPython.Shell import IPShellEmbed
+
+#from IPython import embed
 
 class Ipimp (threading.Thread):
      def __init__(self):
           threading.Thread.__init__(self)
-          self.ipshell = IPShellEmbed(["-noconfirm_exit"])
+#          self.ipshell = embed
+#IPShellEmbed(["-noconfirm_exit"])
 
      def run(self):
           logger.info("Ipimp is launched")
-          self.ipshell()
+          from IPython.config.loader import Config
+
+          cfg = Config()
+          shell_config = cfg.InteractiveShellEmbed
+          shell_config.prompt_in1 = 'In <\\#>: '
+          shell_config.prompt_in2 = '   .\\D.: '
+          shell_config.prompt_out = 'Out<\\#>: '
+          shell_config.history_length = 0
+#          shell_config.history_manager = False
+          
+          # First import the embeddable shell class
+          from IPython.frontend.terminal.embed import InteractiveShellEmbed
+               
+          # Now create an instance of the embeddable shell. The first argument is a
+          # string with options exactly as you would type them if you were starting
+          # IPython at the system command line. Any parameters you want to define for
+          # configuration can thus be specified here.
+          ipshell = InteractiveShellEmbed(config=cfg,
+                                          banner1 = 'Dropping into IPython',
+                                          exit_msg = 'Leaving Interpreter, back to program.')
+          ipshell.history_manager.end_session()
+          ipshell()
+
           logger.info("Quit Ipimp")
           print "IPython exited ... (type Ctrl-C to exit Pimp)"
