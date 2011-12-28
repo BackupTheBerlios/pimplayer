@@ -29,12 +29,19 @@ import pimp.core.playlist
 
 import argparse
 
-#import pprint
-#sys.displayhook=lambda a : pprint.pprint(a)
-
+import sys 
+def pprint(a):
+    if type(a) is list:
+        if args.print0 == True:
+            acc=""
+            for i in a:
+                acc+=i+'\0'
+            sys.stdout.write(acc)
+        else:
+            for i in a : print i
 
 def cmd_player(args):
-    player=Pyro4.Proxy("PYRO:player@localhost:9998")          # get a Pyro proxy to the greeting object
+    player=Pyro4.Proxy("PYRO:player@localhost:%d"%args.port)          # get a Pyro proxy to the greeting object
     if args.enqueue != None:
         print "Enqueue " + str(args.enqueue)
         try:
@@ -49,33 +56,45 @@ def cmd_player(args):
     elif args.info :
         print player.information()
     elif args.playlist :
-        print player.show()
+        import pimp.core.song
+        pprint(map(pimp.core.song.Song.getPath,player.__getslice__(1,player.__len__())))
 
 def cmd_note(args):
     import pimp.core.db
-    Note=Pyro4.Proxy("PYRO:Note@localhost:9998")          # get a Pyro proxy to the greeting object
-    print args.files==None
+    Note=Pyro4.Proxy("PYRO:Note@localhost:%d"%args.port)          # get a Pyro proxy to the greeting object
     if args.files != None and args.files != []:
-        pathfiles=map(pimp.core.db.Path,args.files)
+        pathfiles=args.files
         if args.add != None:
             print map(lambda f : Note.Add(f,args.add),pathfiles)
         else:
             notes=map(Note.GetNote,pathfiles)
-            for (n,p) in zip(notes,pathfiles):
-                print str(n) + " " + p
+            pprint(zip(notes,pathfiles))
     elif args.search != None:
         for i in Note.GreatherOrEqualThan(args.search):
             print i.xnote , i.file.path
     else:
-        print "iop"
-        raise argparse.ArgumentTypeError("Note needs options")
+        raise argparse.ArgumentTypeError("Note needs at least a filepath")
 
+def cmd_file(args):
+    import pimp.core.db
+    File=Pyro4.Proxy("PYRO:File@localhost:%d"%args.port)          # get a Pyro proxy to the greeting object
+    if args.files != None and args.files != []:
+        if args.add == True:
+            import pimp.core.db
+            map(File.Get,map(pimp.core.db.Path,args.files))
+        else: # Without option
+            for fs in map(File.Find,args.files):
+                pprint(map(lambda f : f.path , fs))
+            
+    else:
+        raise argparse.ArgumentTypeError("File needs at least a filepath")
+    
 
 
 def cmd_comment(args):
     import pimp.core.db
     if args.comment != None:
-        Note=Pyro4.Proxy("PYRO:Comment@localhost:9998")          # get a Pyro proxy to the greeting object
+        Note=Pyro4.Proxy("PYRO:Comment@localhost:%d"%args.port)          # get a Pyro proxy to the greeting object
         pathfiles=map(pimp.core.db.Path,args.comment)
         notes=map(Note.GetComments,pathfiles)
         for (n,p) in zip(notes,pathfiles):
@@ -86,6 +105,7 @@ parser = argparse.ArgumentParser(prog='Pimp')
 
 parser.add_argument('--port','-p', type=int, default=9998,help='Pimp Pyro4 server port')
 parser.add_argument('--version',"-v", action='version', version='%(prog)s ' + pimp.core.common.version)
+parser.add_argument('--print0',"-0", action='store_true',default=False, help='Like find print0 arguments')
 subparsers = parser.add_subparsers(help='sub-command help')
 
 parser_player = subparsers.add_parser('player', help='player commands')
@@ -102,7 +122,11 @@ parser_note.add_argument('--search', '-s', type=int ,   action='store',metavar='
 parser_note.add_argument('files', metavar='file', type=str, nargs='*', help='a song file')
 parser_note.set_defaults(func=cmd_note)
 
-#parser_note.add_argument('--note', '-n', type=str ,  nargs='*' , action='store',metavar='file', help='Get notes of files')
+parser_note = subparsers.add_parser('file', help='Files commands (get files without arguments)')
+parser_note.add_argument('--add', '-a', action='store_true', help='Add files to database')
+parser_note.add_argument('files', metavar='file', type=str, nargs='*', help='a song file')
+parser_note.set_defaults(func=cmd_file)
+
 
 parser_comment = subparsers.add_parser('comment', help='comment commands')
 parser_comment.add_argument('--comment', '-c', type=str ,  nargs='*' , action='store',metavar='file', help='Get comment of files')

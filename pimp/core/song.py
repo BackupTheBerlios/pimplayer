@@ -39,5 +39,5 @@ class Song(object):
 		be not available when a playlist is loaded. It is
 		then necessary to update it sometime."""
 		try:
-			self._dbfile=File.Find(self)
+			self._dbfile=File.Find(self,limit=1)[0]
 		except: logging.debug("update exception raise ...")

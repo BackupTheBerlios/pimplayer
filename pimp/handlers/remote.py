@@ -11,6 +11,7 @@ class Remote(object):
             uri_player = daemon.register(player,"player")
             uri_Note = daemon.register(pimp.extensions.tag.Note,"Note")
             uri_Comment = daemon.register(pimp.extensions.tag.Comment,"Comment")
+            uri_File = daemon.register(pimp.core.db.File,"File")
             print "[Pyro4] Object player at uri =", uri_player , uri_Note , uri_Comment      # print the uri so we can use it in the client l		daemon.requestLoop()
             daemon.requestLoop()                  # start the event loop of the server to wait for calls
 

@@ -110,9 +110,12 @@ class File(Db.Base):
         return f
 
     @staticmethod
-    def Find(path):
-        """ Return a File object from a given path or None if it don't exist in database """
-        ret=Db.session.query(File).filter(File.path==path.getPath()).order_by(desc(File.date)).limit(1).first()
+    def Find(path,limit=None):
+        """ Find all files matching path pattern, and sort them by
+        date. arg:'limit' is not implemented. Path should be a str or
+        implement getPath method."""
+        if type(path) is str:path=Path(path)
+        ret=Db.session.query(File).filter(File.path.like('%'+path.getPath()+'%')).order_by(desc(File.date)).all()
         return ret
         
 
@@ -217,14 +220,18 @@ class FileEvent(Event):
 
     @classmethod
     def FindByPath(cls,path):
-        """ Find all cls events for the path """
-        return Db.session.query(cls).join(File).filter(File.path==path.getPath()).all() 
+        """ Find all cls events for the path. 
+        See method:'FindBySong' for more information about path"""
+        if type(path) is str:path=Path(path)
+        return Db.session.query(cls).join(File).filter(File.path.like('%'+path.getPath()+'%')).all() 
 
     @classmethod
     def FindBySong(cls,path):
         """ Find all cls events for the zicApt associated to the
-        path. Even if a file has been moved, it returns all records."""
-        return Db.session.query(cls).join((File, cls.zicApt==File.zicApt)).filter(File.path==path.getPath()).all() 
+        path. Even if a file has been moved, it returns all records. 
+        Path should be a string or implement Path class"""
+        if type(path) is str:path=Path(path)
+        return Db.session.query(cls).join((File, cls.zicApt==File.zicApt)).filter(File.path.like('%'+path.getPath()+'%')).all() 
 
 
     def __init__(self,path,**kwds):
