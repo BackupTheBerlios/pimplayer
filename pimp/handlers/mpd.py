@@ -155,7 +155,14 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
         ito = self.__idToIdx(int(args[1]))
         self.player.move(ifrom,ito)
     
-
+#    def listallinfo(self,args):
+#        """ Command example: listallinfo "/" returns OK """
+#        return ""
+    def count(self,args):
+        """Commamnd example: count "album" "Aucune ..tiquette"
+        """
+        return ("songs: 0\n" +
+                "playtime: 0\n")
 
     Command={
         "outputs": outputs,
@@ -180,7 +187,8 @@ class MpdHandler(SocketServer.ThreadingMixIn,SocketServer.TCPServer):
         #"seekid":seek,
         "seek":seek,
         "move":move,
-        "moveid":moveid
+        "moveid":moveid,
+        "count":count
         }
     """ The list of supported mpd commands """
 
