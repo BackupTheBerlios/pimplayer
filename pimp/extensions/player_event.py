@@ -87,3 +87,46 @@ PlayerPlaylist.AddHandler(
     PlayerPlaylist.seek,
     lambda (path,curTime,newTime) : Seek.Add(path,curTime,newTime))
 
+
+
+# def CountBySong(cls,path):
+#     if type(path) is str:path=Path(path)
+#     return Db.session.query(Play,Play.count(cls.zicApt)).filter(Play.status.like('%'+path.getPath()+'%')).group_by(cls.zicApt).all() 
+# #         session.query(Table.column, func.count(Table.column)).group_by(Table.column).all()
+
+# class PlayerEvent(db.Db.Base):
+#     __tablename__ = 'evt_player'
+
+#     PLAYID='playid'
+#     NEXT='next'
+#     PREV='prev'
+#     QUEUE='queue'
+    
+    
+#     date = db.Column(db.DateTime)
+#     consumedTime = db.Column(db.Integer)
+#     event = db.Column(db.String(64))
+    
+#     @declared_attr
+#     def fileId(cls):
+#         return Column(Integer, ForeignKey('file.id'))
+#     # For sqlalchemy
+#     @declared_attr
+#     def file(cls):
+# #        return relationship(File,primaryjoin="%s.fileId == File.id" % cls.__name__,order_by=desc(File.date))
+#         return relationship(File,primaryjoin="%s.zicApt == File.zicApt" % cls.__name__,
+#                             order_by=desc(File.date),
+#                             foreign_keys=File.zicApt,
+#                             uselist=False,lazy='immediate')
+
+
+#     def __init__(self,path,event,consumedTime): 
+#         self.event=event
+#         self.consumedTime = consumedTime
+# #        db.FileEvent.__init__(self,path,**kwds)
+
+
+#def updatePlayerEvent(date_min,date_max):
+
+
+#     Play

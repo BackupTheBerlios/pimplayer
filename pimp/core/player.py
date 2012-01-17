@@ -4,7 +4,8 @@ import sys, os, time, thread , threading
 import glib, gobject
 import pygst
 pygst.require("0.10")
-import gst
+# Shity kack to avoid gst parsing arguments ...
+tmpArgv=sys.argv ; sys.argv=[] ; import gst ; sys.argv=tmpArgv
 
 from common  import Info,logging,datetime #,Guard
 

@@ -58,6 +58,10 @@ class Comment(db.Db.Base,db.FileEvent):
         return db.FileEvent.__repr__(self) + " " + self.text
 
     @staticmethod
-    def GetComments(path): 
+    def GetComments(comment): 
         """ Return comments (use FindBySong) """ 
         return [c.text for c in Comment.FindBySong(path)]
+
+    @staticmethod
+    def Find(comment):
+        return db.Db.session.query(Comment).filter(Comment.text.like('%'+comment+'%')).group_by(Comment.zicApt).all()

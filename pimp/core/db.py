@@ -15,6 +15,7 @@ information, see File.Get method information.
 To create an new event, create a class that inherited FileEvent or Event.
 
 All method attributes 'path' must implement getPath() method. Path class is a string wrapper.
+All method name ended by Song use zicApt in dbquery
 
 """
 
@@ -25,6 +26,7 @@ from file import format_md5,modification_date,duration
 from sqlalchemy import  create_engine, Table, Column, Integer, String, MetaData, ForeignKey, DateTime , desc
 from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy.ext.declarative import declared_attr, declarative_base
+from sqlalchemy.sql.expression import func
 
 from datetime import datetime
 
@@ -193,6 +195,11 @@ class Event(object):
     @classmethod
     def All(cls):
         return Db.session.query(cls).all()
+
+    @classmethod
+    def ByDate(cls,date_min,date_max):
+        return Db.session.query(cls).filter(cls.date < date_max).all()
+
 
 #class One():
 #    def __init__(self,l):
