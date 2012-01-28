@@ -113,6 +113,17 @@ def cmd_comment(args):
     else:
         raise argparse.ArgumentTypeError("Note needs at least a filepath")
 
+def cmd_show(args):
+    pprint(selectedFiles)
+
+# To use global filter
+# def getSelectedFiles(args):
+#     if args.filepath != None:
+#         File=Pyro4.Proxy("PYRO:File@localhost:%d"%args.port)
+#         return File.Find(args.filepath)
+#     if args.note
+#     else:
+#         return None
 
 parser = argparse.ArgumentParser(prog='Pimp') #,parents=[parser_selector])
 
@@ -121,6 +132,9 @@ parser.add_argument('--version',"-v", action='version', version='%(prog)s ' + pi
 parser.add_argument('--print0',"-0", action='store_true',default=False, help='Like find print0 arguments')
 parser.add_argument('--printPlaylist',"-1", action='store_true',default=False, help='Print as playlist')
 #parser.add_argument('--printz',"-z", action='store_true',default=False, help='Print zicApt instead path')
+#parser.add_argument('--filepath', '-f', type=str ,   action='store',metavar='filepath', help="Search comments")
+
+
 
 subparsers = parser.add_subparsers(help='sub-command help')
 
@@ -145,6 +159,10 @@ parser_file.add_argument('--add', '-a', action='store_true', help='Add files to 
 parser_file.add_argument('files', metavar='file', type=str, nargs='*', help='a song file')
 parser_file.set_defaults(func=cmd_file)
 
+# parser_show = subparsers.add_parser('show', help='show commands')
+# #parser_comment.add_argument('files', metavar='file', type=str, nargs='*', help='a song file')
+# parser_show.set_defaults(func=cmd_show)
+
 
 parser_comment = subparsers.add_parser('comment', help='comment commands')
 parser_comment.add_argument('--add', '-a', type=str ,   action='store',metavar='comment', help='Add comment to files')
@@ -153,5 +171,6 @@ parser_comment.add_argument('files', metavar='file', type=str, nargs='*', help='
 parser_comment.set_defaults(func=cmd_comment)
 
 args = parser.parse_args()
+#selectedFiles = getSelectedFiles(args)
 args.func(args)
 exit(0)
