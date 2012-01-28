@@ -83,12 +83,14 @@ class File(Db.Base):
     @staticmethod
     def Get(path,frontend="pimp"):
         """Get a file from the db or create an entry in the db and return it.
+        Path should be a str or implement getPath method.
         An entry is added if:
         
         * the path is not found
         * the modification date in db is older than modification date of the file
 
         """
+        if type(path) is str:path=Path(path) # Hack !
         ret=Db.session.query(File).filter(File.path==path.getPath()).order_by(desc(File.date)).limit(1).first()
         if ret != None:
             mdfile = modification_date(path.getPath())
@@ -252,6 +254,8 @@ class FileEvent(Event):
     def __repr__(self):
         return "%s , fileid:%s , file:%s" % (Event.__repr__(self),self.fileId, self.file.path)
 
+    def getPath(self):
+        return self.file.getPath()
 
 
 

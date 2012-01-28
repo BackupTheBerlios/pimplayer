@@ -74,7 +74,7 @@ class Playlist(VersionnedList,object):
 		try :
 			self.append(self.cls_song(path))
 			logger.info("Song Added %s" % path)
-		except FileNotSupported:raise
+		except common.FileNotSupported:raise
 
 	def current(self,**kwargs):
 		""" Return current song. 'kwargs' is unsed. (t's just

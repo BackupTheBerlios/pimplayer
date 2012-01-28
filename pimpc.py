@@ -37,8 +37,11 @@ def pprint(a):
         if args.print0 == True:
             acc=""
             for i in a:
-                acc+=i+'\0'
+                acc+=i.getPath()+'\0'
             sys.stdout.write(acc)
+        elif args.printPlaylist :
+            for i in a:
+                print i.getPath()
         else:
             for i in a : print i
     elif type(a) is dict or type(a) is pimp.core.common.Info:
@@ -57,7 +60,9 @@ def cmd_player(args):
             print "FileNotSupported: "+ str(e)
             exit(1)
     elif args.play != None:
-        print "Play [NOT IMPLEMENTED] " + str(args.play)
+        player.play()
+    elif args.pause:
+        player.pause()
     elif args.next :
         print "Next [NOT IMPLEMENTED] "
     elif args.info :
@@ -69,61 +74,61 @@ def cmd_player(args):
 
 def cmd_note(args):
     Note=Pyro4.Proxy("PYRO:Note@localhost:%d"%args.port)          # get a Pyro proxy to the greeting object
-    if args.files != None and args.files != []:
+    if args.search != None:
+        pprint(Note.GreatherOrEqualThan(args.search))
+    elif args.files != None and args.files != []:
         pathfiles=args.files
         if args.add != None:
-            print map(lambda f : Note.Add(f,args.add),pathfiles)
+            pprint (map(lambda f : Note.Add(f,args.add),pathfiles))
         else:
             notes=map(Note.GetNote,pathfiles)
             pprint(zip(notes,pathfiles))
-    elif args.search != None:
-        for i in Note.GreatherOrEqualThan(args.search):
-            print i.xnote , i.file.path
     else:
-        raise argparse.ArgumentTypeError("Note needs at least a filepath")
+        raise argparse.ArgumentTypeError("Note command needs at least a filepath")
 
 def cmd_file(args):
     File=Pyro4.Proxy("PYRO:File@localhost:%d"%args.port)          # get a Pyro proxy to the greeting object
     if args.files != None and args.files != []:
-        if args.add == True:
-            map(File.Get,map(pimp.core.db.Path,args.files))
-        else: # Without option
-            for fs in map(File.Find,args.files):
-                pprint(map(lambda f : f.path , fs))
-            
+       if args.add == True:
+           map(File.Get,map(pimp.core.db.Path,args.files))
+       else: # Without option
+           for fs in map(File.Find,args.files):
+               pprint(fs)
     else:
-        raise argparse.ArgumentTypeError("File needs at least a filepath")
+       raise argparse.ArgumentTypeError("File command needs at least a filepath")
     
 
 
 def cmd_comment(args):
-    Comment=Pyro4.Proxy("PYRO:Comment@localhost:%d"%args.port)          # get a Pyro proxy to the gre   
+    Comment=Pyro4.Proxy("PYRO:Comment@localhost:%d"%args.port)
     if args.files != None and args.files != []:
         if args.add != None:
-            print map(lambda f : Comment.Add(f,args.add),args.files)
+            map(lambda f : Comment.Add(f,args.add),args.files)
         else:
             comments=map(Comment.FindBySong,args.files)
             pprint(zip(comments,args.files))
     elif args.search != None:
-        for i in Comment.Find(args.search):
-            print i.text , i.file.path
+        pprint(Comment.Find(args.search))
+        #    print i.text , i.file.path
     else:
         raise argparse.ArgumentTypeError("Note needs at least a filepath")
 
-# create the top-level parser
-parser = argparse.ArgumentParser(prog='Pimp')
 
-parser.add_argument('--port','-p', type=int, default=9998,help='Pimp Pyro4 server port')
+parser = argparse.ArgumentParser(prog='Pimp') #,parents=[parser_selector])
+
+parser.add_argument('--port','-P', type=int, default=9998,help='Pimp Pyro4 server port')
 parser.add_argument('--version',"-v", action='version', version='%(prog)s ' + pimp.core.common.version)
 parser.add_argument('--print0',"-0", action='store_true',default=False, help='Like find print0 arguments')
-parser.add_argument('--printz',"-z", action='store_true',default=False, help='Print zicApt instead path')
+parser.add_argument('--printPlaylist',"-1", action='store_true',default=False, help='Print as playlist')
+#parser.add_argument('--printz',"-z", action='store_true',default=False, help='Print zicApt instead path')
 
 subparsers = parser.add_subparsers(help='sub-command help')
 
-parser_player = subparsers.add_parser('player', help='player commands')
+parser_player = subparsers.add_parser('player', help='player commands') #,parents=[parser_selector])
 parser_player.add_argument('--info', '-i'  , action='store_true',help='get player informations')
 parser_player.add_argument('--enqueue', '-e', type=str ,  nargs='+' , action='store',metavar='file', help='Enqueue files')
 parser_player.add_argument('--play', '-p' ,type=str ,  nargs='*' , action='store',metavar='file', help='play files')
+parser_player.add_argument('--pause', '-b' , action='store_true',default=False, help='pause')
 parser_player.add_argument('--next', '-n'  , action='store_true',help='play next file')
 parser_player.add_argument('--playlist', '-l'  , action='store_true',help='show current playlist')
 parser_player.add_argument('--current', '-c'  , action='store_true',help='show current song')
@@ -135,14 +140,14 @@ parser_note.add_argument('--search', '-s', type=int ,   action='store',metavar='
 parser_note.add_argument('files', metavar='file', type=str, nargs='*', help='a song file')
 parser_note.set_defaults(func=cmd_note)
 
-parser_note = subparsers.add_parser('file', help='Files commands (get files without arguments)')
-parser_note.add_argument('--add', '-a', action='store_true', help='Add files to database')
-parser_note.add_argument('files', metavar='file', type=str, nargs='*', help='a song file')
-parser_note.set_defaults(func=cmd_file)
+parser_file = subparsers.add_parser('file', help='Files commands (get files without arguments)')
+parser_file.add_argument('--add', '-a', action='store_true', help='Add files to database')
+parser_file.add_argument('files', metavar='file', type=str, nargs='*', help='a song file')
+parser_file.set_defaults(func=cmd_file)
 
 
 parser_comment = subparsers.add_parser('comment', help='comment commands')
-parser_comment.add_argument('--add', '-c', type=str ,  nargs='*' , action='store',metavar='file', help='Get comment of files')
+parser_comment.add_argument('--add', '-a', type=str ,   action='store',metavar='comment', help='Add comment to files')
 parser_comment.add_argument('--search', '-s', type=str ,   action='store',metavar='comment', help="Search comments")
 parser_comment.add_argument('files', metavar='file', type=str, nargs='*', help='a song file')
 parser_comment.set_defaults(func=cmd_comment)

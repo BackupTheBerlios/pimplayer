@@ -25,8 +25,8 @@ class Note(db.Db.Base,db.FileEvent):
         self.xnote = note
         db.FileEvent.__init__(self,path,**kwds)
 
-    def __repr__(self):
-        return db.FileEvent.__repr__(self) + " " + str(self.xnote)
+#    def __repr__(self):
+#        return db.FileEvent.__repr__(self) + " " + str(self.xnote)
 
     @staticmethod
     def GetNote(path):
