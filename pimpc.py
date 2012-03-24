@@ -127,7 +127,7 @@ def cmd_show(args):
 
 parser = argparse.ArgumentParser(prog='Pimp') #,parents=[parser_selector])
 
-parser.add_argument('--port','-P', type=int, default=9998,help='Pimp Pyro4 server port')
+parser.add_argument('--port','-P', type=int, default=9998,help='Pimp Pyro4 server port (default: %(default)s))')
 parser.add_argument('--version',"-v", action='version', version='%(prog)s ' + pimp.core.common.version)
 parser.add_argument('--print0',"-0", action='store_true',default=False, help='Like find print0 arguments')
 parser.add_argument('--printPlaylist',"-1", action='store_true',default=False, help='Print as playlist')

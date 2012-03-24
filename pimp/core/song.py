@@ -9,7 +9,7 @@ class Song(object):
 
 	"""
 
-	#Used to generate playlist ID
+	#Used to generate song ID
 	Offset=0
         
 	def __init__(self,filepath):

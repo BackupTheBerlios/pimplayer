@@ -106,7 +106,10 @@ if(not options.disable_db):
 if (options.mpd_port != None ):
     mpd_port = options.mpd_port
     from pimp.handlers.mpd import Mpd
-    mpd=Mpd(player,mpd_port)
+    from pimp.handlers.mpd_pimp import MpdRequestHandlerPimp
+    mpd=Mpd(mpd_port,MpdRequestHandlerPimp)
+#    from pimp.handlers.mpd import Mpd
+#    mpd=Mpd(player,mpd_port)
 
 import pimp.extensions.context
 

@@ -164,6 +164,9 @@ class Player(object):
 			infos={'status':"stop"}
 		return Info(common.items() + infos.items())
 
+	def timeDuration(self):return self.player.query_duration(gst.FORMAT_TIME, None)[0] / 1000000000;
+	def timePosition(self):return self.player.query_position(gst.FORMAT_TIME, None)[0] / 1000000000;
+
 	def status(self):
 		""" Get the player status
 
