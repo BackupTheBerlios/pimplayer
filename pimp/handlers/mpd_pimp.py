@@ -67,6 +67,10 @@ class SetVol(mpdserver.SetVol):
 class PlayId(mpdserver.PlayId):
     def handle_args(self,songId):
         return player.play(self.playlist.songIdToPosition(songId))
+class Play(mpdserver.Command):
+    def handle_args(self):
+        return player.play()
+
 class Stop(mpdserver.Command):
     def handle_args(self):
         return player.stop()
@@ -109,6 +113,7 @@ PimpMpdRequestHandler.commands['stop']=Stop
 PimpMpdRequestHandler.commands['seek']=Seek
 PimpMpdRequestHandler.commands['pause']=Pause
 PimpMpdRequestHandler.commands['currentsong']=CurrentSong
+PimpMpdRequestHandler.commands['play']=Play
 PimpMpdRequestHandler.Playlist=MpdPlaylist
 
 def mpd(port):
