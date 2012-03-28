@@ -70,6 +70,8 @@ def toPath(a):
 
 class FileNotSupported(Exception):pass
 """ Raise it when a file is not supported by Pimp """
+class NoFileLoaded(Exception):pass
+""" Raise when no files are loaded in Pimp """
 
 class PimpException(Exception):pass
 

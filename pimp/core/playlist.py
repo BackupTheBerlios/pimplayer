@@ -83,7 +83,7 @@ class Playlist(VersionnedList,object):
 		try :
 			return self.__getitem__(self.__current)
 		except IndexError:
-			return None
+			raise common.NoFileLoaded()
 
 	def isEmpty(self): return len(self)==0
 
@@ -126,7 +126,7 @@ class Playlist(VersionnedList,object):
 			if src >= dest:
 				self.insert(dest,self.pop(src))
 			else :
-				self.insert(dest,self[src])
+				self.insert(dest+1,self[src])
 				self.pop(src)
 		except IndexError: return None
 			
