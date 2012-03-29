@@ -39,6 +39,8 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
     def version(self):
         return player.version()
     def delete(self,i):
+        if i==player.getCurrentIdx():
+            player.stop()
         del(player[i])
 
 class Status(mpdserver.Status):
@@ -81,6 +83,10 @@ class Next(mpdserver.Command):
     def handle_args(self):
         return player.next()
 class Prev(mpdserver.Command):
+    def handle_args(self):
+        return player.prev()
+
+class LsInfo(mpdserver.LsInfo):
     def handle_args(self):
         return player.prev()
 
