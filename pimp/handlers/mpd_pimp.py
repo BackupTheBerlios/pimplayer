@@ -38,6 +38,8 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
         player.move(i,j)
     def version(self):
         return player.version()
+    def delete(self,i):
+        del(player[i])
 
 class Status(mpdserver.Status):
     def items(self):
@@ -74,6 +76,14 @@ class Play(mpdserver.Command):
 class Stop(mpdserver.Command):
     def handle_args(self):
         return player.stop()
+
+class Next(mpdserver.Command):
+    def handle_args(self):
+        return player.next()
+class Prev(mpdserver.Command):
+    def handle_args(self):
+        return player.prev()
+
 
 class Add(mpdserver.Add):
     def handle_args(self,song):
@@ -114,6 +124,8 @@ PimpMpdRequestHandler.commands['seek']=Seek
 PimpMpdRequestHandler.commands['pause']=Pause
 PimpMpdRequestHandler.commands['currentsong']=CurrentSong
 PimpMpdRequestHandler.commands['play']=Play
+PimpMpdRequestHandler.commands['next']=Next
+PimpMpdRequestHandler.commands['prev']=Prev
 PimpMpdRequestHandler.Playlist=MpdPlaylist
 
 def mpd(port):
