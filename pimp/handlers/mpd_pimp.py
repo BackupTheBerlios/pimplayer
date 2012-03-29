@@ -10,7 +10,6 @@ logger=logging.getLogger("mpd_pimp")
 logger.setLevel(logging.DEBUG)
 
 
-
 def pimpToMpdPlaylist(playlist):
     return [{'file':e.getPath(),
              'title':'',
@@ -86,10 +85,6 @@ class Prev(mpdserver.Command):
     def handle_args(self):
         return player.prev()
 
-class LsInfo(mpdserver.LsInfo):
-    def handle_args(self):
-        return player.prev()
-
 
 class Add(mpdserver.Add):
     def handle_args(self,song):
@@ -97,6 +92,7 @@ class Add(mpdserver.Add):
             return player.appendByPath(song)
         except pimp.core.common.FileNotSupported as e:
             raise mpdserver.MpdCommandError(str(e)+" is not a supported file","add")
+
 
 class CurrentSong(mpdserver.CurrentSong):
     def song(self):
@@ -118,10 +114,36 @@ class Seek(mpdserver.Seek):
 class Pause(mpdserver.Pause):
     def handle_pause(self): player.pause()
     def handle_unpause(self): player.pause()
+
+
+import os
+class LsInfo(mpdserver.LsInfo):
+    rootDir="/media/usb1"
+    def handle_args(self,directory=None):
+        if not directory:
+            self.args['directory']="/"
+        print "lsinfo: %s"%directory
+    def __helperFile(self,filename):
+        return [("file",filename),
+                ("Last-Modified","2011-12-17T22:47:58Z"),
+                ("Time","0"),
+                ("Artist", ""),
+                ("Title",filename),
+                ("Track","")]
+    def items(self):
+        if self.args['directory'] == "/":
+            root=self.rootDir+self.args['directory']
+        else:
+            root=self.args['directory']+"/"
+        root,dirs,files=os.walk(root).next()
+        ret= ([("directory",(root+i)) for i in dirs] +
+              sum([self.__helperFile((root+i)) for i in files],[]))
+        return ret
     
 class PimpMpdRequestHandler(mpdserver.MpdRequestHandler):pass
 PimpMpdRequestHandler.commands['playid']=PlayId
 PimpMpdRequestHandler.commands['add']=Add
+PimpMpdRequestHandler.commands['addid']=Add
 PimpMpdRequestHandler.commands['clear']=Clear
 PimpMpdRequestHandler.commands['status']=Status
 PimpMpdRequestHandler.commands['setvol']=SetVol
@@ -131,7 +153,9 @@ PimpMpdRequestHandler.commands['pause']=Pause
 PimpMpdRequestHandler.commands['currentsong']=CurrentSong
 PimpMpdRequestHandler.commands['play']=Play
 PimpMpdRequestHandler.commands['next']=Next
-PimpMpdRequestHandler.commands['prev']=Prev
+PimpMpdRequestHandler.commands['previous']=Prev
+PimpMpdRequestHandler.commands['lsinfo']=LsInfo
+
 PimpMpdRequestHandler.Playlist=MpdPlaylist
 
 def mpd(port):
