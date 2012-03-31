@@ -1,5 +1,6 @@
 import common
 import os.path
+import os
 
 logger=common.logging.getLogger("playlist")
 logger.setLevel(common.logging.INFO)
@@ -67,8 +68,21 @@ class Playlist(VersionnedList,object):
 		self.cls_song=cls_song
 		for e in paths: self.appendByPath(e)
 		self.__current = 0
-
+	
 	def appendByPath(self,path):
+		""" Append a directory recursylvely or a song to the
+		playlist."""		
+		if os.path.isfile(path):
+			try :
+				return self.appendSong(path)
+			except common.FileNotSupported:raise
+		for root,dirs,files in os.walk(path):
+			for f in files:
+				try :
+					self.appendSong(root+"/"+f)
+				except common.FileNotSupported:pass
+
+	def appendSong(self,path):
 		""" Append a song to the playlist.
 		Increase playlist version."""
 		try :

@@ -99,7 +99,8 @@ class CurrentSong(mpdserver.CurrentSong):
         try:
             return self.helper_mkSong(file=player.current().getPath(),
                                       time=player.current().duration,
-                                      title=player.current().getPath())
+                                      title=player.current().getPath(),
+                                      id=generateId(player.current()))
         except pimp.core.common.NoFileLoaded :
             return ""
 
