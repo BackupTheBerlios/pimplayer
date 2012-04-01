@@ -1,6 +1,7 @@
 import common
 import os.path
 import os
+import random
 
 logger=common.logging.getLogger("playlist")
 logger.setLevel(common.logging.INFO)
@@ -56,7 +57,7 @@ class VersionnedList(list):
 class Playlist(VersionnedList,object):
 	""" A Playlist is a circular buffer of :class:`song`. A
 	:class:`song` must have a path attribute. When a song can not
-	be created, it raises a FileNotSupported.
+	be added, it raises a FileNotSupported.
 
 	When the playlist is modified, playlist :data:`version` is
 	increased (Should be implemented in :mod:`mpd`) See VersionnedList.
@@ -68,6 +69,7 @@ class Playlist(VersionnedList,object):
 		self.cls_song=cls_song
 		for e in paths: self.appendByPath(e)
 		self.__current = 0
+		self.__random = False
 	
 	def appendByPath(self,path):
 		""" Append a directory recursylvely or a song to the
@@ -114,7 +116,10 @@ class Playlist(VersionnedList,object):
 			    +current)
 
 	def __getStep(self,step,setCurrent=False):
+		""" Jump in playlist with a modulo """
 		try :
+			if self.random():
+				step=random.randint(1,len(self)-1)
 			tmpCurrent = (self.__current + step) % len(self)
 			ret = self.__getitem__(tmpCurrent)
 			if setCurrent:
@@ -122,9 +127,13 @@ class Playlist(VersionnedList,object):
 			return ret
 		except : raise
 	def getNext(self,setCurrent=False):
+		""" if setCurrent is set to True, the current song
+		becomes next song, otherwise it just return the next
+		song """
 		return self.__getStep(1,setCurrent=setCurrent)
 
 	def getPrev(self,setCurrent=False):
+		""" See getNext documentation """
 		return self.__getStep(-1,setCurrent=setCurrent)
 	def get(self,idx,setCurrent=False): 
 		ret = self[idx]
@@ -143,6 +152,13 @@ class Playlist(VersionnedList,object):
 				self.insert(dest+1,self[src])
 				self.pop(src)
 		except IndexError: return None
+		
+	def random(self,state=None):
+		"if state is not set, it just return current random state "
+		if state != None:
+			self.__random=state
+		return self.__random
+		
 			
 
 	# To make playlist a serializable object

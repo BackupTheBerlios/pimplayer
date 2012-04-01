@@ -46,7 +46,7 @@ class Status(mpdserver.Status):
     def items(self):
         args={'volume':player.volume()*100,
               'repeat':0,
-              'random':0,
+              'random':int(player.random()),
               'xfade':0}
         if player.status() == "play":
             return self.helper_status_play(elapsedTime=player.timePosition(),
@@ -85,6 +85,9 @@ class Prev(mpdserver.Command):
     def handle_args(self):
         return player.prev()
 
+class Random(mpdserver.Random):
+    def handle_args(self,state):
+        player.random(bool(state))
 
 class Add(mpdserver.Add):
     def handle_args(self,song):
@@ -156,6 +159,7 @@ PimpMpdRequestHandler.commands['play']=Play
 PimpMpdRequestHandler.commands['next']=Next
 PimpMpdRequestHandler.commands['previous']=Prev
 PimpMpdRequestHandler.commands['lsinfo']=LsInfo
+PimpMpdRequestHandler.commands['random']=Random
 
 PimpMpdRequestHandler.Playlist=MpdPlaylist
 
