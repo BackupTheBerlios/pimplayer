@@ -100,7 +100,7 @@ class Add(mpdserver.Add):
 
 
 class CurrentSong(mpdserver.CurrentSong):
-    def song(self):
+    def songs(self):
         try:
             return self.helper_mkSong(file=player.current().getPath(),
                                       time=player.current().duration,
@@ -125,7 +125,6 @@ class Pause(mpdserver.Pause):
 class ListPlaylists(mpdserver.ListPlaylists):
     def handle_playlists(self):
         return pimp.extensions.context.listContext()
-
 class Load(mpdserver.Load):
     def handle_args(self,playlistName):
         pimp.extensions.context.loadContext(player,playlistName)
@@ -135,6 +134,16 @@ class Save(mpdserver.Load):
 class Rm(mpdserver.Rm):
     def handle_args(self,playlistName):
         pimp.extensions.context.deleteContext(playlistName)
+class ListPlaylistInfo(mpdserver.ListPlaylistInfo): # Since 0.12
+    def songs(self):
+        try:
+            p=pimp.extensions.context.getPlaylistFromContext(self.args['playlistName'])
+        except pimp.extensions.context.ContextNotExist:p=[]
+        return sum([self.helper_mkSong(file=s.getPath(),
+                                       time=s.duration,
+                                       title=s.getPath(),
+                                       id=generateId(s)) for s in p],[])
+                
 
 import os
 class LsInfo(mpdserver.LsInfo):
@@ -180,6 +189,8 @@ PimpMpdRequestHandler.commands['listplaylists']=ListPlaylists
 PimpMpdRequestHandler.commands['load']=Load
 PimpMpdRequestHandler.commands['save']=Save
 PimpMpdRequestHandler.commands['rm']=Rm
+PimpMpdRequestHandler.commands['listplaylistinfo']=ListPlaylistInfo
+
 
 PimpMpdRequestHandler.Playlist=MpdPlaylist
 

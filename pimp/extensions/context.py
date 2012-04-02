@@ -11,6 +11,8 @@ import os
 context_dir=os.path.expanduser("~/.pimp/contexts/")
 """ Directory where context files are written """
 
+class ContextNotExist(Exception):pass
+
 def saveContext(player,name):
 	""" Write a context of name 'name'. Currently, the the playlist state is supported """
         c = context_dir+name
@@ -27,11 +29,21 @@ def loadContext(player,name):
 		d = pickle.load(f)
 		pimp.core.playlist.Playlist.__setstate__(player,d)
 		f.close
-	except IOError : raise Exception("Context %s doesn't exist" % c)
+	except IOError : raise ContextNotExist("Context %s doesn't exist" % c)
 
 def listContext():
 	root,dirs,files=os.walk(context_dir).next()
 	return files
+def getPlaylistFromContext(name):
+	""" Get a playlist object from a context"""
+	try :
+		c = context_dir+name
+		f = open(c, 'r')
+		d = pickle.load(f)
+		f.close
+		return d['playlist']
+	except IOError : raise ContextNotExist("Context %s doesn't exist" % c)
+
 
 def deleteContext(name):
 	playlistName=context_dir+name
