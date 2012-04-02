@@ -6,6 +6,7 @@ import pickle
 import pimp.core.playlist
 import os.path
 import atexit
+import os
 
 context_dir=os.path.expanduser("~/.pimp/contexts/")
 """ Directory where context files are written """
@@ -27,7 +28,15 @@ def loadContext(player,name):
 		pimp.core.playlist.Playlist.__setstate__(player,d)
 		f.close
 	except IOError : raise Exception("Context %s doesn't exist" % c)
-	
+
+def listContext():
+	root,dirs,files=os.walk(context_dir).next()
+	return files
+
+def deleteContext(name):
+	playlistName=context_dir+name
+	if os.path.exists(playlistName):
+		os.remove(playlistName)
 
 
 #def enable(player,name):

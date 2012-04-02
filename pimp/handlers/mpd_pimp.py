@@ -4,6 +4,7 @@ import pimp.core.common
 import threading
 
 from pimp.core.pimp import player
+import pimp.extensions.context
 
 import logging
 logger=logging.getLogger("mpd_pimp")
@@ -120,6 +121,20 @@ class Pause(mpdserver.Pause):
     def handle_unpause(self): player.pause()
 
 
+class ListPlaylists(mpdserver.ListPlaylists):
+    def handle_playlists(self):
+        return pimp.extensions.context.listContext()
+
+class Load(mpdserver.Load):
+    def handle_args(self,playlistName):
+        pimp.extensions.context.loadContext(player,playlistName)
+class Save(mpdserver.Load):
+    def handle_args(self,playlistName):
+        pimp.extensions.context.saveContext(player,playlistName)
+class Rm(mpdserver.Rm):
+    def handle_args(self,playlistName):
+        pimp.extensions.context.deleteContext(playlistName)
+
 import os
 class LsInfo(mpdserver.LsInfo):
     rootDir="/media/usb1"
@@ -160,6 +175,11 @@ PimpMpdRequestHandler.commands['next']=Next
 PimpMpdRequestHandler.commands['previous']=Prev
 PimpMpdRequestHandler.commands['lsinfo']=LsInfo
 PimpMpdRequestHandler.commands['random']=Random
+# Playlist Management
+PimpMpdRequestHandler.commands['listplaylists']=ListPlaylists
+PimpMpdRequestHandler.commands['load']=Load
+PimpMpdRequestHandler.commands['save']=Save
+PimpMpdRequestHandler.commands['rm']=Rm
 
 PimpMpdRequestHandler.Playlist=MpdPlaylist
 
