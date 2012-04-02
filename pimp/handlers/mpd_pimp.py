@@ -18,11 +18,12 @@ def pimpToMpdPlaylist(playlist):
              'album':'',
              'artist':'',
              'track':0,
-             'id':id(e)}
+             'id':generateId(e)}
             for e in playlist]
 
 def generateId(song):
-    return id(song)
+    id64 = id(song)
+    return id64 & (pow(2,32)-1)
 
 class MpdPlaylist(mpdserver.MpdPlaylist):
     def songIdToPosition(self,i):
@@ -141,7 +142,6 @@ class LsInfo(mpdserver.LsInfo):
     def handle_args(self,directory=None):
         if not directory:
             self.args['directory']="/"
-        print "lsinfo: %s"%directory
     def __helperFile(self,filename):
         return [("file",filename),
                 ("Last-Modified","2011-12-17T22:47:58Z"),
