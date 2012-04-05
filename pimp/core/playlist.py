@@ -80,6 +80,7 @@ class Playlist(VersionnedList,object):
 				return self.appendSong(path)
 			except common.FileNotSupported:raise
 		for root,dirs,files in os.walk(path):
+			files.sort()
 			for f in files:
 				try :
 					self.appendSong(root+"/"+f)
