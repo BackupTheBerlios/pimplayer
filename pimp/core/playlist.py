@@ -68,7 +68,8 @@ class Playlist(VersionnedList,object):
 	def __init__(self,cls_song,paths=[]):
 		self.cls_song=cls_song
 		for e in paths: self.appendByPath(e)
-		self.__current = 0
+		self.__current = (0,0) 
+		""" (version,idx) """
 		self.__random = False
 	
 	def appendByPath(self,path):
@@ -97,7 +98,7 @@ class Playlist(VersionnedList,object):
 		here for homogenieity with setCurrent in getNext and
 		other method) """
 		try :
-			return self.__getitem__(self.__current)
+			return self.__getitem__(self.currentIdx())
 		except IndexError:
 			raise common.NoFileLoaded()
 
@@ -108,7 +109,7 @@ class Playlist(VersionnedList,object):
 		if not self.isEmpty() and self.current() != None:
 			current=[('currentPath', self.current().getPath()),
 				 ('currentId' , self.current().id ),
-				 ('currentPos',self.__current)]
+				 ('currentPos',self.currentIdx())]
 		else:
 			logger.debug("Playlist is empty")
 			current = []
@@ -117,15 +118,11 @@ class Playlist(VersionnedList,object):
 
 	def __getStep(self,step,setCurrent=False):
 		""" Jump in playlist with a modulo """
-		try :
-			if self.random():
-				step=random.randint(1,len(self)-1)
-			tmpCurrent = (self.__current + step) % len(self)
-			ret = self.__getitem__(tmpCurrent)
-			if setCurrent:
-				self.__current = tmpCurrent
-			return ret
-		except : raise
+		if self.random():
+			step=random.randint(1,len(self)-1)
+		tmpCurrent = (self.currentIdx() + step) % len(self)
+		ret = self.get(tmpCurrent,setCurrent)
+		return ret
 	def getNext(self,setCurrent=False):
 		""" if setCurrent is set to True, the current song
 		becomes next song, otherwise it just return the next
@@ -138,10 +135,23 @@ class Playlist(VersionnedList,object):
 	def get(self,idx,setCurrent=False): 
 		ret = self[idx]
 		if setCurrent:
-			self.__current = idx
+			self.current().isCurrent(False)
+			self.__current = (self.version(),idx)
+			self[idx].isCurrent(True)
 		return ret
 
-	def getCurrentIdx(self): return self.__current
+	def getCurrentIdx(self): return self.currentIdx()
+	""" Deprecated: use currentIdx"""
+
+	def currentIdx(self): 
+		""" Return current played song index. Detect playlist
+		modifications. """
+		if self.version() != self.__current[0]:
+			if not self[self.__current[1]].isCurrent():
+				for i in range(0,len(self)):
+					if self[i].isCurrent():
+						self.__current=(self.version(),i)
+		return self.__current[1]
 
 	def move(self,src,dest):
 		""" Move a song for position src to position dest"""

@@ -20,6 +20,7 @@ class Song(object):
 		self.duration=duration(filepath)
 		Song.Offset=Song.Offset+1
 		self._dbfile=None
+		self.__iscurrent=False
 		self.update()
 
 
@@ -28,6 +29,15 @@ class Song(object):
 
 	def getPath(self):
 		return self.__filepath
+
+	def isCurrent(self,s=None):
+		""" Is this song is the current played song. Can be
+		set with s boolean argument. """ 
+		if s==True:
+			self.__iscurrent=True
+		elif s==False:
+			self.__iscurrent=False
+		return self.__iscurrent
 
 
 	def show(self,pathToStr=lambda x : x):
