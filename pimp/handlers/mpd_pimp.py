@@ -164,7 +164,10 @@ class LsInfo(mpdserver.LsInfo):
             root=self.rootDir+self.args['directory']
         else:
             root=self.args['directory']+"/"
-        root,dirs,files=os.walk(root).next()
+        try:
+            root,dirs,files=os.walk(root).next()
+        except StopIteration:
+            return []
         ret= ([("directory",(root+i)) for i in dirs] +
               sum([self.__helperFile((root+i)) for i in files],[]))
         return ret
