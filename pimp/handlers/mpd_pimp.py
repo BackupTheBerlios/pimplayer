@@ -145,9 +145,9 @@ class ListPlaylistInfo(mpdserver.ListPlaylistInfo): # Since 0.12
                                        title=s.getPath(),
                                        id=generateId(s)) for s in p],[])
                 
-
 import os
 class LsInfo(mpdserver.LsInfo):
+    """ Doesn't work with mpc when a filepath begins with a '/'."""
     rootDir="/media/usb1"
     def handle_args(self,directory=None):
         if not directory:
@@ -158,7 +158,9 @@ class LsInfo(mpdserver.LsInfo):
                 ("Time","0"),
                 ("Artist", ""),
                 ("Title",filename),
-                ("Track","")]
+                ("Album",""),
+                ("Track",""),
+                ("Genre","")]
     def items(self):
         if self.args['directory'] == "/":
             root=self.rootDir+self.args['directory']
@@ -168,8 +170,8 @@ class LsInfo(mpdserver.LsInfo):
             root,dirs,files=os.walk(root).next()
         except StopIteration:
             return []
-        ret= ([("directory",(root+i)) for i in dirs] +
-              sum([self.__helperFile((root+i)) for i in files],[]))
+        ret= ([("directory",(root+i)) for i in dirs if not i.startswith(".")] +
+              sum([self.__helperFile((root+i)) for i in files if not i.startswith(".")],[]))
         return ret
     
 class PimpMpdRequestHandler(mpdserver.MpdRequestHandler):pass
