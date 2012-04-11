@@ -83,6 +83,7 @@ def duration(path):
     """ To get the duration of a file. """
     p=player.Player(path)
     dur=p.information()['duration']
+    print "DURATION " , dur
     p.quit()
     return dur
     

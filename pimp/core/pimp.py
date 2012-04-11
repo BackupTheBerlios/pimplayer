@@ -63,7 +63,7 @@ class PlayerPlaylist(Player,Playlist,object):
 	def prev(self):	return self.__play(Playlist.getPrev)
             
         @common.Hook.HookMethod
-	def play(self,idx=None):
+	def play(self,idx=None,**kwargs):
 		if idx!=None:
 			return self.__play(lambda a , setCurrent : Playlist.get(a,idx,setCurrent))
 		else:

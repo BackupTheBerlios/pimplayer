@@ -102,7 +102,7 @@ class Player(object):
 			self.player.set_state(gst.STATE_NULL)
 			err, debug = message.parse_error()
 			self.handle_error()
-			logging.debug("pygst error: %s | %s" % (err, debug))
+			logging.debug("PyGST internal error : %s | %s" % (err, debug))
 		elif t == gst.MESSAGE_STATE_CHANGED:
 			if message.src is self.player:
 				old, new, pending = message.parse_state_changed()
