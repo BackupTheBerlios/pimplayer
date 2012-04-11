@@ -112,7 +112,9 @@ class CurrentSong(mpdserver.CurrentSong):
 
 
 class Clear(mpdserver.Command):
-    def handle_args(self): del(player[:])
+    def handle_args(self): 
+        player.stop()
+        del(player[:])
 
 
 class Seek(mpdserver.Seek):
