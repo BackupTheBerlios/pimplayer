@@ -3,6 +3,7 @@
 import sys, os, time, thread , threading
 import glib, gobject
 import pygst
+import urllib
 pygst.require("0.10")
 # Shity kack to avoid gst parsing arguments ...
 tmpArgv=sys.argv ; sys.argv=[] ; import gst ; sys.argv=tmpArgv
@@ -158,7 +159,7 @@ class Player(object):
 			       'position':self.player.query_position(gst.FORMAT_TIME, None)[0] / 1000000000,
 			       'volume':self.volume(),
 			       'mute':self.player.get_property("mute"),
-			       'gstPlayedFile':self.player.get_property("uri")
+			       'gstPlayedFile':urllib.unquote(self.player.get_property("uri"))
 			       }
 		else: 
 			infos={'status':"stop"}
@@ -180,7 +181,7 @@ class Player(object):
 		""" Ask to pygst the current played song """
 
 		if self.player.get_state()[1] == gst.STATE_PLAYING:
-			return self.player.get_property("uri")
+			return urllib.unquote(self.player.get_property("uri"))
 		else : return "No song played"
 
 
@@ -197,7 +198,7 @@ class Player(object):
 			if self.player.get_state()[1] == gst.STATE_PLAYING:
 				return False
 			else:
-				self.player.set_property("uri", "file://" + filepath)
+				self.player.set_property("uri", "file://" + urllib.quote(filepath))
 				s=self.player.set_state(gst.STATE_PAUSED)
 				if s ==  gst.STATE_CHANGE_FAILURE:
 					logging.debug("File can not be loaded %s" % filepath)
