@@ -11,14 +11,14 @@ logger=logging.getLogger("mpd_pimp")
 logger.setLevel(logging.DEBUG)
 
 
-def pimpToMpdPlaylist(playlist):
-    return [{'file':e.getPath(),
-             'title':'',
-             'time':e.duration,
-             'album':'',
-             'artist':'',
-             'track':0,
-             'id':generateId(e)}
+def pimpSongToMpdPlaylistSongs(playlist):
+    return [mpdserver.MpdPlaylistSong(file=e.getPath(),
+                                      songId=generateId(e),
+                                      title='',
+                                      time=e.duration,
+                                      album='',
+                                      artist='',
+                                      track=0)
             for e in playlist]
 
 def generateId(song):
@@ -33,7 +33,7 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
                 return j
             
     def handlePlaylist(self):
-        return pimpToMpdPlaylist(player)
+        return pimpSongToMpdPlaylistSongs(player)
 
     def move(self,i,j):
         player.move(i,j)
@@ -102,11 +102,11 @@ class Add(mpdserver.Add):
 class CurrentSong(mpdserver.CurrentSong):
     def songs(self):
         try:
-            return self.helper_mkSong(file=player.current().getPath(),
-                                      time=player.current().duration,
-                                      title=player.current().getPath(),
-                                      playlistPosition=player.currentIdx(),
-                                      id=generateId(player.current()))
+            return [mpdserver.MpdPlaylistSong(file=player.current().getPath(),
+                                              songId=generateId(player.current()),
+                                              time=player.current().duration,
+                                              title=player.current().getPath(),
+                                              playlistPosition=player.currentIdx())]
         except pimp.core.common.NoFileLoaded :
             return ""
 
@@ -142,11 +142,11 @@ class ListPlaylistInfo(mpdserver.ListPlaylistInfo): # Since 0.12
         try:
             p=pimp.extensions.context.getPlaylistFromContext(self.args['playlistName'])
         except pimp.extensions.context.ContextNotExist:p=[]
-        return sum([self.helper_mkSong(file=s.getPath(),
-                                       time=s.duration,
-                                       title=s.getPath(),
-                                       id=generateId(s)) for s in p],[])
-                
+        return [mpdserver.MpdPlaylistSong(file=s.getPath(),
+                                          time=s.duration,
+                                          title=s.getPath(),
+                                          songId=generateId(s)) for s in p]
+    
 import os
 class LsInfo(mpdserver.LsInfo):
     """ Doesn't work with mpc when a filepath begins with a '/'."""
