@@ -86,13 +86,16 @@ class Playlist(VersionnedList,object):
 					self.appendSong(root+"/"+f)
 				except common.FileNotSupported:pass
 
+
 	def appendSong(self,path):
 		""" Append a song to the playlist.
 		Increase playlist version."""
 		try :
 			self.append(self.cls_song(path))
-			logger.info("Song Added %s" % path)
 		except common.FileNotSupported:raise
+		except common.PyGstError:raise
+		logger.info("Song Added %s" % path)
+
 
 	def current(self,**kwargs):
 		""" Return current song. 'kwargs' is unsed. (t's just

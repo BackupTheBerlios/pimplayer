@@ -70,7 +70,8 @@ class PlayerPlaylist(Player,Playlist,object):
 			return self.__play()
 
         @common.Hook.HookMethod
-	def queue(self): return self.next()
+	def queue(self): 
+		return self.next()
 
         @common.Hook.HookMethod
         def stop(self):

@@ -70,9 +70,11 @@ def toPath(a):
 
 class FileNotSupported(Exception):pass
 """ Raise it when a file is not supported by Pimp """
+class PyGstError(Exception):pass
+""" Raise it when a file is not supported by Pimp. 
+You can use gst-launch-0.10 -v playbin2 uri='your_file' to get more debug information about gstreamer """
 class NoFileLoaded(Exception):pass
 """ Raise when no files are loaded in Pimp """
-
 class PimpException(Exception):pass
 
 
