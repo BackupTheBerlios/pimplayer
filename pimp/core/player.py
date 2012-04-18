@@ -31,9 +31,10 @@ class Player(object):
 	
 	To avoid leaking (socket, thread), :func:`stop` method MUST BE explicitly used.
 
-	To block until player is ready, use blocking waitReady function. The
-	player is set unready in stop method and set ready when a
-	message READY is received from pygst. See __getPyGstState__ methods instead ...
+	To block until player is ready, use blocking waitReady
+	function. The player is set unready in stop method and set
+	ready when a message READY is received from pygst. See
+	__getPyGstState__ methods instead which doesn't work ...
 
 	__setstate__(state) and __getstate__() methods permit to save
 	and load a player state.
@@ -74,7 +75,7 @@ class Player(object):
 		
 		States can be 'error', 'ready', 'stop', 'eof' or 'init'.
 		"""
-		print "PyGstSetState %s" % threading.currentThread()
+#		print "PyGstSetState %s" % threading.currentThread()
 		self._pygstCondition.acquire()
 		self._pygstState=state
 		self._pygstCondition.notifyAll()
@@ -232,18 +233,18 @@ class Player(object):
 				# Ensure that pygst acceptes file If player thread calls this method,
 				# gst is waiting the return of this method, and then messages
 				# (_on_message method) can not be handled.
-				if not threading.currentThread().ident == self._playerThreadId:
-					self._pygstCondition.acquire()
-					while True:
-						state=self.__pygstGetState__()
-						if state=='ready' or state=='error':break
-						print "Before Wait cur: %s , player: %s" % (threading.currentThread(),self._playerThreadId)
-						self._pygstCondition.wait()
-						print "End Wait %s" % threading.currentThread()
-					self._pygstCondition.release()
-					if state == 'error':
-						raise common.PyGstError(filepath)
-					        return False
+				# if not threading.currentThread().ident == self._playerThreadId:
+				# 	self._pygstCondition.acquire()
+				# 	while True:
+				# 		state=self.__pygstGetState__()
+				# 		if state=='ready' or state=='error':break
+				# 		print "Before Wait cur: %s , player: %s" % (threading.currentThread(),self._playerThreadId)
+				# 		self._pygstCondition.wait()
+				# 		print "End Wait %s" % threading.currentThread()
+				# 	self._pygstCondition.release()
+				# 	if state == 'error':
+				# 		raise common.PyGstError(filepath)
+				# 	        return False
 				if s ==  gst.STATE_CHANGE_FAILURE:
 					logging.debug("File can not be loaded %s" % filepath)
 					return False
