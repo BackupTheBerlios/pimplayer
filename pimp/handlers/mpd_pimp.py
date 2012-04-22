@@ -27,7 +27,6 @@ def generateId(song):
 
 class MpdPlaylist(mpdserver.MpdPlaylist):
     def songIdToPosition(self,i):
-        print "songid in songIdPos "+str(i) 
         for j in range(0,len(player)):
             if generateId(player[j])==i : 
                 return j
@@ -177,30 +176,31 @@ class LsInfo(mpdserver.LsInfo):
         return ret
     
 class PimpMpdRequestHandler(mpdserver.MpdRequestHandler):pass
-PimpMpdRequestHandler.commands['playid']=PlayId
-PimpMpdRequestHandler.commands['add']=Add
-PimpMpdRequestHandler.commands['addid']=Add
-PimpMpdRequestHandler.commands['clear']=Clear
-PimpMpdRequestHandler.commands['status']=Status
-PimpMpdRequestHandler.commands['setvol']=SetVol
-PimpMpdRequestHandler.commands['stop']=Stop
-PimpMpdRequestHandler.commands['seek']=Seek
-PimpMpdRequestHandler.commands['pause']=Pause
-PimpMpdRequestHandler.commands['currentsong']=CurrentSong
-PimpMpdRequestHandler.commands['play']=Play
-PimpMpdRequestHandler.commands['next']=Next
-PimpMpdRequestHandler.commands['previous']=Prev
-PimpMpdRequestHandler.commands['lsinfo']=LsInfo
-PimpMpdRequestHandler.commands['random']=Random
-# Playlist Management
-PimpMpdRequestHandler.commands['listplaylists']=ListPlaylists
-PimpMpdRequestHandler.commands['load']=Load
-PimpMpdRequestHandler.commands['save']=Save
-PimpMpdRequestHandler.commands['rm']=Rm
-PimpMpdRequestHandler.commands['listplaylistinfo']=ListPlaylistInfo
-
-
-PimpMpdRequestHandler.Playlist=MpdPlaylist
-
 def mpd(port):
-    return mpdserver.Mpd(port,PimpMpdRequestHandler)
+    mpd=mpdserver.MpdServerDaemon(port,PimpMpdRequestHandler)
+    mpd.requestHandler.RegisterCommand(mpdserver.Outputs)
+    mpd.requestHandler.RegisterCommand(PlayId)
+    mpd.requestHandler.RegisterCommand(Add)
+    mpd.requestHandler.RegisterCommand(Add)
+    mpd.requestHandler.RegisterCommand(Clear)
+    mpd.requestHandler.RegisterCommand(Status)
+    mpd.requestHandler.RegisterCommand(SetVol)
+    mpd.requestHandler.RegisterCommand(Stop)
+    mpd.requestHandler.RegisterCommand(Seek)
+    mpd.requestHandler.RegisterCommand(Pause)
+    mpd.requestHandler.RegisterCommand(CurrentSong)
+    mpd.requestHandler.RegisterCommand(Play)
+    mpd.requestHandler.RegisterCommand(Next)
+    mpd.requestHandler.RegisterCommand(Prev)
+    mpd.requestHandler.RegisterCommand(LsInfo)
+    mpd.requestHandler.RegisterCommand(Random)
+# Playlist Management
+    mpd.requestHandler.RegisterCommand(ListPlaylists)
+    mpd.requestHandler.RegisterCommand(Load)
+    mpd.requestHandler.RegisterCommand(Save)
+    mpd.requestHandler.RegisterCommand(Rm)
+    mpd.requestHandler.RegisterCommand(ListPlaylistInfo)
+    PimpMpdRequestHandler.Playlist=MpdPlaylist
+    logger.info("Supported Mpd Commands command name | allowed users: ")
+    for e in mpd.requestHandler.SupportedCommand():
+        logger.info("\t%s"%str(e))
