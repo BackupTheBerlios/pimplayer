@@ -49,20 +49,22 @@ class Status(mpdserver.Status):
               'repeat':0,
               'random':int(player.random()),
               'xfade':0}
-        if player.status() == "play":
+        status=player.status()
+        if status == "play":
             return self.helper_status_play(elapsedTime=player.timePosition(),
                                            durationTime=player.timeDuration(),
                                            playlistSongNumber=player.getCurrentIdx(),
                                            playlistSongId=generateId(player[player.getCurrentIdx()]),
                                            **args)
-        elif player.status() == "pause":
+        elif status == "pause":
             return self.helper_status_pause(elapsedTime=player.timePosition(),
                                             durationTime=player.timeDuration(),
                                             playlistSongNumber=player.getCurrentIdx(),
                                             playlistSongId=generateId(player[player.getCurrentIdx()]),
                                             **args)
-        elif player.status() == "stop":
+        elif status == "stop":
             return self.helper_status_stop(**args)
+
 
 class SetVol(mpdserver.SetVol):
     def handle_args(self,volume):

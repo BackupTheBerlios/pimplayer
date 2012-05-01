@@ -139,7 +139,9 @@ class Playlist(VersionnedList,object):
 	def get(self,idx,setCurrent=False): 
 		ret = self[idx]
 		if setCurrent:
-			self.current().isCurrent(False)
+			try:
+				self.current().isCurrent(False)
+			except common.NoFileLoaded:pass
 			self.__current = (self.version(),idx)
 			self[idx].isCurrent(True)
 		return ret
