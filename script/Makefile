@@ -13,7 +13,7 @@ gnome:
 	@ echo "Gnome file associations add for:" $(GNOME_DESKTOP_FILE)
 	@ install $(GNOME_DESKTOP_FILE) $(GNOME_APPLICATION_DIR)/
 	@ update-desktop-database $(GNOME_APPLICATION_DIR)
-	@ echo "warning: gnome checks PATH variable to launch a program, it then must contain "$(LOCAL_BIN)
+	@ echo "warning: gnome checks PATH variable in user '.profile' file to launch a program, it then must contain "$(LOCAL_BIN)
 
 
 
