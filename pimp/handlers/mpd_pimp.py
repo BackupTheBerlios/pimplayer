@@ -84,7 +84,7 @@ class Stop(mpdserver.Command):
 class Next(mpdserver.Command):
     def handle_args(self):
         return player.next()
-class Prev(mpdserver.Command):
+class Previous(mpdserver.Command):
     def handle_args(self):
         return player.prev()
 
@@ -193,7 +193,7 @@ def mpd(port):
     mpd.requestHandler.RegisterCommand(CurrentSong)
     mpd.requestHandler.RegisterCommand(Play)
     mpd.requestHandler.RegisterCommand(Next)
-    mpd.requestHandler.RegisterCommand(Prev)
+    mpd.requestHandler.RegisterCommand(Previous)
     mpd.requestHandler.RegisterCommand(LsInfo)
     mpd.requestHandler.RegisterCommand(Random)
 # Playlist Management
