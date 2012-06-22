@@ -204,5 +204,6 @@ def mpd(port):
     mpd.requestHandler.RegisterCommand(ListPlaylistInfo)
     PimpMpdRequestHandler.Playlist=MpdPlaylist
     logger.info("Supported Mpd Commands command name | allowed users: ")
+    mpd.requestHandler.UserPermissionsCommand("kg",group="read")
     for e in mpd.requestHandler.SupportedCommand():
         logger.info("\t%s"%str(e))
