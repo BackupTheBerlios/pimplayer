@@ -185,6 +185,8 @@ def mpd(port):
     mpd.requestHandler.RegisterCommand(Add)
     mpd.requestHandler.RegisterCommand(Add)
     mpd.requestHandler.RegisterCommand(Clear)
+    mpd.requestHandler.RegisterCommand(mpdserver.Move)
+    mpd.requestHandler.RegisterCommand(mpdserver.MoveId)
     mpd.requestHandler.RegisterCommand(Status)
     mpd.requestHandler.RegisterCommand(SetVol)
     mpd.requestHandler.RegisterCommand(Stop)
