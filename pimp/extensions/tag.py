@@ -14,6 +14,7 @@ Some examples::
 """
 import pimp.core.db as db
 from pimp.core.pimp import player
+import itertools
 
 class Note(db.Db.Base,db.FileEvent):
     """ To log a note on a file."""
@@ -31,10 +32,15 @@ class Note(db.Db.Base,db.FileEvent):
     @staticmethod
     def GetNote(path):
         """ Compute the notes average of audio fingerprint associated
-        to this path """
+        to this path (use FindBySong) """
         try:
             ns=Note.FindBySong(path)
-            return sum([a.xnote for a in ns]) / len(ns)
+            res=[]
+            for (k,g) in itertools.groupby(ns,Note.getPath):
+                notes=list(g)
+                average=float(sum([a.xnote for a in notes])) / len(notes)
+                res.append((k,average))
+            return res
         except ZeroDivisionError: return None
 
     @staticmethod

@@ -72,19 +72,29 @@ def cmd_player(args):
     elif args.playlist :
         pprint(map(pimp.core.song.Song.getPath,player.__getslice__(1,player.__len__())))
 
+def getCurrentSong(args):
+    player=Pyro4.Proxy("PYRO:player@localhost:%d"%args.port)          # get a Pyro proxy to the greeting object
+    return player.current().getPath()
+
+def getFileFromArg(args):
+    if args.current:
+        return getCurrentSong(args)
+    elif args.file != None:
+        return args.file
+    else: 
+        raise argparse.ArgumentTypeError("Required command need -c or -f options !")
+        return None
+
 def cmd_note(args):
     Note=Pyro4.Proxy("PYRO:Note@localhost:%d"%args.port)          # get a Pyro proxy to the greeting object
-    if args.search != None:
+    if args.add != None:
+        f=getFileFromArg(args)
+        pprint ((Note.Add(f,args.add),f))
+    elif args.search != None:
         pprint(Note.GreatherOrEqualThan(args.search))
-    elif args.files != None and args.files != []:
-        pathfiles=args.files
-        if args.add != None:
-            pprint (map(lambda f : Note.Add(f,args.add),pathfiles))
-        else:
-            notes=map(Note.GetNote,pathfiles)
-            pprint(zip(notes,pathfiles))
     else:
-        raise argparse.ArgumentTypeError("Note command needs at least a filepath")
+        f=getFileFromArg(args)
+        pprint([("%.2f"% n,f) for (f,n) in Note.GetNote(f)])
 
 def cmd_file(args):
     File=Pyro4.Proxy("PYRO:File@localhost:%d"%args.port)          # get a Pyro proxy to the greeting object
@@ -94,8 +104,8 @@ def cmd_file(args):
        else: # Without option
            for fs in map(File.Find,args.files):
                pprint(fs)
-    else:
-       raise argparse.ArgumentTypeError("File command needs at least a filepath")
+    else:            
+        raise argparse.ArgumentTypeError("File command needs at least a filepath or a global search (ex: '-c')")
     
 
 
@@ -125,6 +135,7 @@ def cmd_show(args):
 #     else:
 #         return None
 
+
 parser = argparse.ArgumentParser(prog='Pimp') #,parents=[parser_selector])
 
 parser.add_argument('--port','-P', type=int, default=9998,help='Pimp Pyro4 server port (default: %(default)s))')
@@ -133,8 +144,9 @@ parser.add_argument('--print0',"-0", action='store_true',default=False, help='Li
 parser.add_argument('--printPlaylist',"-1", action='store_true',default=False, help='Print as playlist')
 #parser.add_argument('--printz',"-z", action='store_true',default=False, help='Print zicApt instead path')
 #parser.add_argument('--filepath', '-f', type=str ,   action='store',metavar='filepath', help="Search comments")
-
-
+parser.add_argument('--current',"-c", action='store_true',default=False, help='getcurrentPlayed Song')
+parser.add_argument('--file',"-f", type=str , action='store',metavar='file', help='str pattern')
+#parser.set_defaults(func=cmd_base)
 
 subparsers = parser.add_subparsers(help='sub-command help')
 
@@ -151,7 +163,6 @@ parser_player.set_defaults(func=cmd_player)
 parser_note = subparsers.add_parser('note', help='Note commands (get all notes without arguments)')
 parser_note.add_argument('--add', '-a', type=int ,   action='store',metavar='note', help='Add note to files')
 parser_note.add_argument('--search', '-s', type=int ,   action='store',metavar='note', help="Search file notes greather than 'note'")
-parser_note.add_argument('files', metavar='file', type=str, nargs='*', help='a song file')
 parser_note.set_defaults(func=cmd_note)
 
 parser_file = subparsers.add_parser('file', help='Files commands (get files without arguments)')

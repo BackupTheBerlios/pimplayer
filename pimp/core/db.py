@@ -229,16 +229,20 @@ class FileEvent(Event):
 
     @classmethod
     def FindByPath(cls,path):
-        """ Find all cls events for the path. 
+        """ Find all cls events for the path.  Path can be a partial string path.
         See method:'FindBySong' for more information about path"""
         if type(path) is str:path=Path(path)
         return Db.session.query(cls).join(File).filter(File.path.like('%'+path.getPath()+'%')).all() 
 
     @classmethod
     def FindBySong(cls,path):
-        """ Find all cls events for the zicApt associated to the
-        path. Even if a file has been moved, it returns all records. 
-        Path should be a string or implement Path class"""
+        """ High level search function. Find all cls events for the
+        zicApt associated to the path. Path can be a partial string
+        path.  If many entry of file matched to pattern exist, it
+        return all events associated to its zicApt. The last filepath
+        of this zicApt is returned. Respond is a list sorted by
+        filepath. Even if a file has been moved, it returns all
+        records.  Path should be a string or implement Path class."""
         if type(path) is str:path=Path(path)
         return Db.session.query(cls).join((File, cls.zicApt==File.zicApt)).filter(File.path.like('%'+path.getPath()+'%')).all() 
 
