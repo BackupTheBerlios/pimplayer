@@ -98,30 +98,26 @@ def cmd_note(args):
 
 def cmd_file(args):
     File=Pyro4.Proxy("PYRO:File@localhost:%d"%args.port)          # get a Pyro proxy to the greeting object
-    if args.files != None and args.files != []:
-       if args.add == True:
-           map(File.Get,map(pimp.core.db.Path,args.files))
-       else: # Without option
-           for fs in map(File.Find,args.files):
-               pprint(fs)
-    else:            
-        raise argparse.ArgumentTypeError("File command needs at least a filepath or a global search (ex: '-c')")
-    
-
+    f=getFileFromArg(args)
+    if f==None:
+        raise argparse.ArgumentTypeError("File command needs at least a filepath or a global search (ex: '-c')")        
+    if args.add == True:
+           map(File.Get,map(pimp.core.db.Path,f))
+    else: # Without option
+        pprint([a.getPath() for a in File.Find(f)])
 
 def cmd_comment(args):
     Comment=Pyro4.Proxy("PYRO:Comment@localhost:%d"%args.port)
-    if args.files != None and args.files != []:
-        if args.add != None:
-            map(lambda f : Comment.Add(f,args.add),args.files)
-        else:
-            comments=map(Comment.FindBySong,args.files)
-            pprint(zip(comments,args.files))
+    if args.add != None:
+        f=getFileFromArg(args)
+        File=Pyro4.Proxy("PYRO:File@localhost:%d"%args.port)          # get a Pyro proxy to the greeting object
+        files=File.Find(f)
+        map( lambda f : Comment.Add(f,args.add) , files)
     elif args.search != None:
         pprint(Comment.Find(args.search))
-        #    print i.text , i.file.path
     else:
-        raise argparse.ArgumentTypeError("Note needs at least a filepath")
+        f=getFileFromArg(args)
+        pprint([(f.text,f.getPath()) for f in Comment.FindBySong(f)])
 
 def cmd_show(args):
     pprint(selectedFiles)

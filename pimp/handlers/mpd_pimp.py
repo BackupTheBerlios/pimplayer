@@ -1,6 +1,7 @@
 # import pimp.handlers.mpd
 import mpdserver
 import pimp.core.common
+import pimp.core.player
 import threading
 
 from pimp.core.pimp import player
@@ -72,7 +73,10 @@ class SetVol(mpdserver.SetVol):
 
 class PlayId(mpdserver.PlayId):
     def handle_args(self,songId):
-        return player.play(self.playlist.songIdToPosition(songId))
+        try:
+            return player.play(self.playlist.songIdToPosition(songId))
+        except pimp.core.player.FileCannotBePlayed as e:
+            raise mpdserver.MpdCommandError("File '%s' can not be played" % e.filepath,"playid")
 class Play(mpdserver.Command):
     def handle_args(self):
         return player.play()

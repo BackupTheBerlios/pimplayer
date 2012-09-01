@@ -15,6 +15,10 @@ import common
 logger=common.logging.getLogger("player")
 logger.setLevel(common.logging.DEBUG)
 
+class FileCannotBePlayed(Exception):
+    def __init__(self,filepath):
+        self.filepath=filepath
+
 class Player(object):
 	"""Player is a simple audio player based on pygst. It's just
 	able to play a file and do some basic operation on it such as
@@ -253,7 +257,7 @@ class Player(object):
 			
 	def play(self,filepath):
 		""" Call :func:`stop`, then :func:`load`. Finally, the gstreamer status is set to PLAY.
-		
+		If filepath can not be player, raise FileCannotBePlayed exception.
 		:rtype: The return value of :func:`load`.
 		"""
 
@@ -264,7 +268,8 @@ class Player(object):
 			return True
 		else: 
 			logging.warning("File '%s' can not be played" % filepath)
-			return False
+			raise FileCannotBePlayed(filepath)
+#			return False
 		
 	def stop(self):
 		""" To stop a played file. This method is not safe """
