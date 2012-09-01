@@ -135,6 +135,7 @@ class ListPlaylists(mpdserver.ListPlaylists):
         return pimp.extensions.context.listContext()
 class Load(mpdserver.Load):
     def handle_args(self,playlistName):
+        player.stop()
         pimp.extensions.context.loadContext(player,playlistName)
 class Save(mpdserver.Load):
     def handle_args(self,playlistName):
