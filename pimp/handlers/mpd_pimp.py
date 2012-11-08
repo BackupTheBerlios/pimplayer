@@ -156,7 +156,7 @@ class ListPlaylistInfo(mpdserver.ListPlaylistInfo): # Since 0.12
 import os
 class LsInfo(mpdserver.LsInfo):
     """ Doesn't work with mpc when a filepath begins with a '/'."""
-    rootDir="/media/usb1"
+    rootDir="/mnt/zic/"
     def handle_args(self,directory=None):
         if not directory:
             self.args['directory']="/"

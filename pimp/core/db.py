@@ -48,6 +48,8 @@ class Db(object):
         """ Called to initialize database module """
         Db.engine=create_engine("mysql://%s:%s@localhost/%s" % (user,pwd,dbName), use_ansiquotes=True)
         Db.session = sessionmaker(bind=Db.engine)()
+        Db.session.rollback()
+        Db.session.flush()
         Db.Base.metadata.create_all(Db.engine)
         logger.info("Pimp is using '%s' database with user '%s' and password '%s'" % (dbName,user,pwd))
 
