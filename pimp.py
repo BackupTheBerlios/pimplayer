@@ -24,8 +24,8 @@ usage = "%prog -p MPD_PORT -d DATABASE -u DB_USERNAME --db-passwd=PASSWRD [optio
 parser = OptionParser(usage)
 parser.add_option("-p", "--mpd-port", dest="mpd_port", type=int,
                   help="mpd handler port")
-parser.add_option("-d", "--db-database", dest="db_database",
-                  help="database used by pimp")
+#parser.add_option("-d", "--db-database", dest="db_database",
+#                  help="database used by pimp")
 parser.add_option("--disable-db", 
                   action="store_true",dest="disable_db",default=False,
                   help="Enable Database [default: %default]")
@@ -44,11 +44,9 @@ parser.add_option("-c","--enable_context",
                   action="store_true",dest="enable_context",default=False,
                   help="Enable context extension [default: %default]")
 
+parser.add_option("-u", "--db-url", dest="db_url",
+                  help="url of database")
 
-parser.add_option("-u", "--db-username", dest="db_username",
-                  help="username of database")
-parser.add_option("--db-passwd", dest="db_password",
-                  help="password to access database")
 parser.add_option("-v",
                   action="store_true", dest="verbose",
                   help="print INFO message on stdout (message are also written in .pimp.log)")
@@ -84,22 +82,17 @@ if options.enable_context:
 # Initialisation of database
 # ==========================
 if(not options.disable_db):
-    if (options.db_database == None 
-        or options.db_username == None 
-        or options.db_password == None) :
-        parser.error("you must give database name, user and password or use --disable-db option.")
+    if (options.db_url == None ):
+        parser.error("you must give a database url or use --disable-db option.")
         exit()
-    database=options.db_database
-    user = options.db_username
-    pwd =  options.db_password
-    from pimp.core.db import Db
-    Db.Configure(user,pwd,database)
+    import audiodb
+    audiodb.core.db.Db.ConfigureUrl(options.db_url)
 
 # Initialisation of extensions
 # ============================
 if(not options.disable_db):
     import pimp.extensions.player_event
-    import pimp.extensions.tag
+#    import pimp.extensions.tag
 
 # Initialisation of handlers
 # ==========================

@@ -1,6 +1,6 @@
 from common import *
-from file import duration,supported
-from db import File
+from audiodb.core.file import duration,format,FormatNotSupported
+#from db import File
 import os.path
 
 class Song(object):
@@ -13,7 +13,9 @@ class Song(object):
 	Offset=0
         
 	def __init__(self,filepath):
-		if not supported(filepath):
+		try : 
+			format(filepath)
+		except FormatNotSupported:
 			raise FileNotSupported(filepath)
 		self.__filepath=filepath
 		self.id=Song.Offset

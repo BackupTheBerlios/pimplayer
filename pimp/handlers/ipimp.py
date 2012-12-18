@@ -21,7 +21,7 @@ from pimp.extensions.context import *
 from pimp.core.song import *
 from pimp.core.playlist import *
 
-from pimp.core.db import File
+from audiodb.core.db import File
 
 logger=logging.getLogger("ipimp")
 logger.setLevel(logging.DEBUG)
